@@ -1,0 +1,32 @@
+{
+    "name": "cagartner/correios-consulta",
+    "description": "Package para pesquisa de serviços de busca por cep, calculo de frete e etc, diretamente nos serviços dos Correios.",
+    "keywords": ["cep","brazil","laravel","frete"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Carlos A. Gartner",
+            "email": "contato@carlosgartner.com.br"
+        }
+    ],
+    "require": {
+        "php": ">=7.3.0",
+        "cagartner/phpquery": "0.9.11"
+    },
+    "autoload": {
+        "psr-0": {
+            "Cagartner\\CorreiosConsulta": "src/"
+        }
+    },
+    "minimum-stability": "dev",
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Cagartner\\CorreiosConsulta\\ServiceProvider"
+            ],
+            "aliases": {
+                "Correios": "Cagartner\\CorreiosConsulta\\Facade"
+            }
+        }
+    }
+}
