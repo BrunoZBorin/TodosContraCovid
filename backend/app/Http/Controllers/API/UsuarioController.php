@@ -5,6 +5,9 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Usuario;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
+
 
 class UsuarioController extends Controller
 {
@@ -27,7 +30,7 @@ class UsuarioController extends Controller
     {
         //
     }
-
+//fone', 'perfil', 'unidade_saude_id'
     /**
      * Store a newly created resource in storage.
      *
@@ -36,7 +39,15 @@ class UsuarioController extends Controller
      */
     public function store(Request $request)
     {
-        $usuario = Usuario::create($request->all());
+        $usuario = Usuario::create([
+            'nome' => $request->nome,
+            'email' => $request->email,
+            'fone' => $request->fone,
+            'perfil' => $request->perfil,
+            'unidade_saude_id' => $request->unidade_saude_id,
+            'password' => Hash::make($request->password),
+            'api_token' => Str::random(60),
+        ]);
         return response()->json($usuario, 201);
     }
 
