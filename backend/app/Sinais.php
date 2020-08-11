@@ -4,10 +4,10 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class UnidadeSaude extends Model
+class Sinais extends Model
 {
     protected $fillable = [
-        'nome' ,'telefone', 'cep', 'logradouro', 'numero', 'bairro', 'cidade', 'estado'
+        'nome'
     ];
     public $timestamps = false;
 }

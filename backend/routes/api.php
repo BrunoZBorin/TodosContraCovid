@@ -18,6 +18,13 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::apiResources([
-    'unidade_saudes' => 'API\UnidadeSaudeController',
-    'usuarios' => 'API\UsuarioController'
+    'unidades_saude' => 'API\UnidadeSaudeController',
+    'unidades_sintomaticas' => 'API\UnidadeSintomaticaController',
+    'usuarios' => 'API\UsuarioController',
+    'sinais' => 'API\SinaisController',
+    'atendimentos' => 'API\AtendimentoController',
+    'pacientes' => 'API\PacienteController',
+    'comorbidades' => 'API\ComorbidadesController',
+    'familiares' => 'API\FamiliarController'
     ]);
+Route::post('/primeiro_cadastro', 'API\PacienteController@primeiro_cadastro');

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Usuario;
 
 class UsuarioController extends Controller
 {
@@ -35,7 +36,8 @@ class UsuarioController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $usuario = Usuario::create($request->all());
+        return response()->json($usuario, 201);
     }
 
     /**

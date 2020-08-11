@@ -14,9 +14,17 @@ class CreateFamiliarsTable extends Migration
     public function up()
     {
         Schema::create('familiars', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+            $table->increments('id');
+            $table->string('nome');
+            $table->string('sintomatico');
+            $table->enum('exame', ['positivo', 'negativo', 'aguardando_resultado']);
+            $table->integer('paciente_id')->unsigned();
+            $table->foreign('paciente_id')
+            ->references('id')
+            ->onDelete('cascade')
+            ->on('pacientes');
         });
+
     }
 
     /**

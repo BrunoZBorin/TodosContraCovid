@@ -21,7 +21,8 @@ class CreateUnidadeSaudesTable extends Migration
             $table->string('logradouro');
             $table->string('bairro');
             $table->string('cidade');
-            $table->string('estado');   
+            $table->string('estado');
+            $table->string('telefone');   
         });
     }
 
