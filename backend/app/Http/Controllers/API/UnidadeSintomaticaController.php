@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\UnidadeSintomatica;
 
 class UnidadeSintomaticaController extends Controller
 {
@@ -35,7 +36,17 @@ class UnidadeSintomaticaController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $endereco = \Correios::cep($request->cep);
+        $unidadeSintomatica = new UnidadeSintomatica();
+        $unidadeSintomatica->fill($request->all());
+        if(!empty($endereco)) {
+            $unidadeSintomatica->logradouro = $endereco['logradouro'];
+            $unidadeSintomatica->bairro = $endereco['bairro'];
+            $unidadeSintomatica->cidade = $endereco['cidade'];
+            $unidadeSintomatica->estado = $endereco['uf'];
+        }
+        $unidadeSintomatica->save();
+        return response()->json($unidadeSintomatica, 201);
     }
 
     /**

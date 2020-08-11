@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Comorbidades;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Familiar;
 
-class FamiliarController extends Controller
+class ComorbidadesController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -36,8 +36,8 @@ class FamiliarController extends Controller
      */
     public function store(Request $request)
     {
-        $familiar = Familiar::create($request->all());
-        return response()->json($familiar, 201);
+        $comorbidades = Comorbidades::create($request->all());
+        return response()->json($comorbidades, 201);
     }
 
     /**

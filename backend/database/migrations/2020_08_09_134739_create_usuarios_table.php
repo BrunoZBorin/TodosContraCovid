@@ -14,8 +14,20 @@ class CreateUsuariosTable extends Migration
     public function up()
     {
         Schema::create('usuarios', function (Blueprint $table) {
-            $table->id();
+            $table->increments('id');
+            $table->string('nome');
+            $table->string('fone');
+            $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('password');
+            $table->rememberToken();
             $table->timestamps();
+            $table->enum('perfil', ['municipal', 'monitoramento']);
+            $table->integer('unidade_saude_id')->unsigned();
+            $table->foreign('unidade_saude_id')
+            ->references('id')
+            ->onDelete('cascade')
+            ->on('unidade_saudes');
         });
     }
 

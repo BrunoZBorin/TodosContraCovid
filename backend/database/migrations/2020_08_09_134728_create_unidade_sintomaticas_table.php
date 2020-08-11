@@ -14,8 +14,15 @@ class CreateUnidadeSintomaticasTable extends Migration
     public function up()
     {
         Schema::create('unidade_sintomaticas', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+            $table->increments('id');
+            $table->string('nome');
+            $table->string('cep');
+            $table->string('numero');
+            $table->string('logradouro');
+            $table->string('bairro');
+            $table->string('cidade');
+            $table->string('estado');
+            $table->string('telefone');   
         });
     }
 
