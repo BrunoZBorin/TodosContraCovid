@@ -25,6 +25,9 @@ Route::apiResources([
     'atendimentos' => 'API\AtendimentoController',
     'pacientes' => 'API\PacienteController',
     'comorbidades' => 'API\ComorbidadesController',
-    'familiares' => 'API\FamiliarController'
+    'familiares' => 'API\FamiliarController',
+    'users' => 'API\UserController'
     ]);
 Route::post('/primeiro_cadastro', 'API\PacienteController@primeiro_cadastro');
+Route::post('/register', 'API\AuthController@register');
+Route::post('/login', 'API\AuthController@login');
