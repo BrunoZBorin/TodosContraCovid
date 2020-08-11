@@ -29,6 +29,12 @@ class CreateUsuariosTable extends Migration
             ->onDelete('cascade')
             ->on('unidade_saudes');
         });
+        Schema::table('usuarios', function ($table) {
+            $table->string('api_token', 80)->after('password')
+                                ->unique()
+                                ->nullable()
+                                ->default(null);
+        });
     }
 
     /**

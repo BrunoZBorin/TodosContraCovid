@@ -115,7 +115,7 @@ class PacienteController extends Controller
         $paciente->cns = $request->paciente_cns;
         $paciente->data_nasc = $request->paciente_data_nasc;
         $paciente->obito = $request->paciente_obito;
-        $paciente->primeira_avalicao_medica = $request->paciente_primeira_avaliacao_medica;
+        $paciente->primeira_avaliacao_medica = $request->paciente_primeira_avaliacao_medica;
         $paciente->isolamento_ate = $request->paciente_isolamento_ate;
         $paciente->data_inicio_sintomas = $request->paciente_data_inicio_sintomas;
         $paciente->data_coleta_exames = $request->paciente_data_coleta_exames;

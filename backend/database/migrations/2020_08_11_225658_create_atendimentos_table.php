@@ -36,7 +36,7 @@ class CreateAtendimentosTable extends Migration
             $table->foreign('usuario_id')
             ->references('id')
             ->onDelete('cascade')
-            ->on('usuarios');
+            ->on('users');
         });
     }
 
