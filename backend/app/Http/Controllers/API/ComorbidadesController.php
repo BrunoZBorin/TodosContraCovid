@@ -15,17 +15,8 @@ class ComorbidadesController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        $comorbidades = Comorbidades::all();
+        return response()->json($comorbidades, 200);
     }
 
     /**
@@ -48,18 +39,8 @@ class ComorbidadesController extends Controller
      */
     public function show($id)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+        $comorbidade = Comorbidades::findOrFail($id);
+        return response()->json($comorbidade, 200);
     }
 
     /**
@@ -71,7 +52,10 @@ class ComorbidadesController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $comorbidade = Comorbidades::findOrFail($id);
+        $comorbidade->fill($request->all());
+        $comorbidade->save();
+        return response()->json($comorbidade, 200);
     }
 
     /**
@@ -82,6 +66,8 @@ class ComorbidadesController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $comorbidade = Comorbidades::findOrFail($id);
+        $comorbidade->delete();
+        return response()->json([], 200);
     }
 }

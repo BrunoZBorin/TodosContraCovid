@@ -15,17 +15,8 @@ class AtendimentoController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        $atendimento = Atendimento::all();
+        return response()->json($atendimento, 200);
     }
 
     /**
@@ -48,18 +39,8 @@ class AtendimentoController extends Controller
      */
     public function show($id)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+        $atendimento = Atendimento::findOrFail($id);
+        return response()->json($atendimento, 200);
     }
 
     /**
@@ -71,8 +52,12 @@ class AtendimentoController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $atendimento = Atendimento::findOrFail($id);
+        $atendimento->fill($request->all());
+        $atendimento->save();
+        return response()->json($atendimento, 200);
     }
+    
 
     /**
      * Remove the specified resource from storage.
@@ -82,6 +67,8 @@ class AtendimentoController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $atendimento = Atendimento::findOrFail($id);
+        $atendimento->delete();
+        return response()->json([], 200);
     }
 }

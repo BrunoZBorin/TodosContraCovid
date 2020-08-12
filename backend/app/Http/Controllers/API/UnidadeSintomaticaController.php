@@ -15,17 +15,8 @@ class UnidadeSintomaticaController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        $unidadesSintomaticas = UnidadeSintomatica::all();
+        return response()->json($unidadesSintomaticas, 200);
     }
 
     /**
@@ -57,20 +48,11 @@ class UnidadeSintomaticaController extends Controller
      */
     public function show($id)
     {
-        //
+        $unidadeSintomatica = UnidadeSintomatica::findOrFail($id);
+        return response()->json($unidadeSintomatica, 200);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
+    
     /**
      * Update the specified resource in storage.
      *
@@ -80,7 +62,17 @@ class UnidadeSintomaticaController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $unidadeSintomatica = UnidadeSintomatica::findOrFail($id);
+        $endereco = \Correios::cep($request->cep);
+        $unidadeSintomatica->fill($request->all());
+        if(!empty($endereco)) {
+            $unidadeSintomatica->logradouro = $endereco['logradouro'];
+            $unidadeSintomatica->bairro = $endereco['bairro'];
+            $unidadeSintomatica->cidade = $endereco['cidade'];
+            $unidadeSintomatica->estado = $endereco['uf'];
+        }
+        $unidadeSintomatica->save();
+        return response()->json($unidadeSintomatica, 201);
     }
 
     /**
@@ -91,6 +83,8 @@ class UnidadeSintomaticaController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $unidadeSintomatica = UnidadeSintomatica::findOrFail($id);
+        $unidadeSintomatica->delete();
+        return response()->json([],200);
     }
 }
