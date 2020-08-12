@@ -19,17 +19,8 @@ class PacienteController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        $paciente = Paciente::all();
+        return response()->json($paciente, 200);
     }
 
     /**
@@ -61,18 +52,8 @@ class PacienteController extends Controller
      */
     public function show($id)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+        $paciente = Paciente::findOrFail($id);
+        return response()->json($paciente, 200);
     }
 
     /**
@@ -84,7 +65,10 @@ class PacienteController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $paciente = Paciente::findOrFail($id);
+        $paciente->fill($request->all());
+        $paciente->save();
+        return response()->json($paciente, 201);
     }
 
     /**
@@ -95,7 +79,9 @@ class PacienteController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $paciente = Paciente::findOrFail($id);
+        $paciente->delete();
+        return response()->json([], 200);
     }
 
     public function primeiro_cadastro(Request $request)

@@ -20,16 +20,6 @@ class UnidadeSaudeController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -58,18 +48,8 @@ class UnidadeSaudeController extends Controller
      */
     public function show($id)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+        $unidadeSaude = UnidadeSaude::findOrFail($id);
+        return response()->json($unidadeSaude, 200);
     }
 
     /**
@@ -81,7 +61,17 @@ class UnidadeSaudeController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $unidadeSaude = UnidadeSaude::findOrFail($id);
+        $endereco = \Correios::cep($request->cep);
+        $unidadeSaude->fill($request->all());
+        if(!empty($endereco)) {
+            $unidadeSaude->logradouro = $endereco['logradouro'];
+            $unidadeSaude->bairro = $endereco['bairro'];
+            $unidadeSaude->cidade = $endereco['cidade'];
+            $unidadeSaude->estado = $endereco['uf'];
+        }
+        $unidadeSaude->save();
+        return response()->json($unidadeSaude, 201);
     }
 
     /**
@@ -92,6 +82,8 @@ class UnidadeSaudeController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $unidadeSaude = UnidadeSaude::findOrFail($id);
+        $unidadeSaude->delete();
+        return response()->json([], 200);
     }
 }
