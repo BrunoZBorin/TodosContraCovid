@@ -1,5 +1,5 @@
 <template>
-	<v-content>
+	<v-main>
 		<v-snackbar v-model="snack" :timeout="3000" :color="snackColor" top>
 			{{ snackText }}
 			<v-btn text @click="snack = false">Fechar</v-btn>
@@ -40,7 +40,7 @@
 				</v-col>
 			</v-row>
 		</v-container>
-	</v-content>
+	</v-main>
 </template>
 
 <script>

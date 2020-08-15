@@ -29,5 +29,6 @@ Route::apiResources([
     'users' => 'API\UserController'
     ]);
 Route::post('/primeiro_cadastro', 'API\PacienteController@primeiro_cadastro');
+Route::get('/cep', 'API\PacienteController@cep');
 Route::post('/register', 'API\AuthController@register');
 Route::post('/login', 'API\AuthController@login');
