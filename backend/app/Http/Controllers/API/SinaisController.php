@@ -20,16 +20,6 @@ class SinaisController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -49,18 +39,8 @@ class SinaisController extends Controller
      */
     public function show($id)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+        $sinais = Sinais::findOrFail($id);
+        return response()->json($sinais, 200);
     }
 
     /**
@@ -72,7 +52,10 @@ class SinaisController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $sinais = Sinais::findOrFail($id);
+        $sinais->fill($request->all());
+        $sinais->save();
+        return response()->json($sinais, 201);
     }
 
     /**
@@ -83,6 +66,8 @@ class SinaisController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $sinais = Sinais::findOrFail($id);
+        $sinais->delete();
+        return response()->json([], 200);
     }
 }
