@@ -168,4 +168,10 @@ class PacienteController extends Controller
 
         return response()->json([$paciente,$atendimento, $familiars, $paciente_comorbidades, $atendimento_sinais], 201);
     }
+
+    public function cep(Request $request)
+    {
+        $endereco = \Correios::cep($request->cep);
+        return response()->json($endereco, 200);
+    }
 }

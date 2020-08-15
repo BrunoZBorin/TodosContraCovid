@@ -1,8 +1,8 @@
 <template>
-    <v-content>
+    <v-main>
         <Menu />
         <router-view></router-view>
-    </v-content>
+    </v-main>
 </template>
 
 <script>
