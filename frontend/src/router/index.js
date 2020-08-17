@@ -18,7 +18,7 @@ const routes = [
     },
     children: [
       {
-        path: "/atendimento",
+        path: "/atendimento:paciente",
         name: "atendimento",
         component: () => import("../views/Atendimento")
       }
