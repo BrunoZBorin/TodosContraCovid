@@ -88,32 +88,34 @@ class PacienteController extends Controller
     {
         $endereco = \Correios::cep($request->paciente_cep);
         $paciente = new Paciente();
-        if(!empty($endereco)) {
-            $paciente->logradouro = $endereco['logradouro'];
-            $paciente->bairro = $endereco['bairro'];
-            $paciente->cidade = $endereco['cidade'];
-            $paciente->estado = $endereco['uf'];
+        if(empty($endereco)) {
+            return response("Endereço não encontrado.", 500);
         }
-        $paciente->nome = $request->paciente_nome;
-        $paciente->cep = $request->paciente_cep;
-        $paciente->numero = $request->paciente_numero;
-        $paciente->telefone = $request->paciente_telefone;
-        $paciente->cns = $request->paciente_cns;
-        $paciente->data_nasc = $request->paciente_data_nasc;
-        $paciente->obito = $request->paciente_obito;
-        $paciente->primeira_avaliacao_medica = $request->paciente_primeira_avaliacao_medica;
-        $paciente->isolamento_ate = $request->paciente_isolamento_ate;
-        $paciente->data_inicio_sintomas = $request->paciente_data_inicio_sintomas;
-        $paciente->data_coleta_exames = $request->paciente_data_coleta_exames;
-        $paciente->unidade_sintomatica_id = $request->paciente_unidade_sintomatica_id;
-        $paciente->convenio = $request->paciente_convenio;
-        $paciente->unidade_saude_id = $request->paciente_unidade_saude_id;
-        $paciente->tipo_exame = $request->paciente_tipo_exame;
-        $paciente->data_resultado = $request->paciente_data_resultado;
-        $paciente->resultado_exame = $request->paciente_resultado_exame;
-        $paciente->grupo_risco = $request->paciente_grupo_risco;     
 
-        $paciente->save();
+        $paciente = Paciente::create([
+            'logradouro' => $endereco['logradouro'],
+            'bairro' => $endereco['bairro'],
+            'cidade' => $endereco['cidade'],
+            'estado' => $endereco['uf'],
+            'nome' => $request->paciente_nome,
+            'cep' => $request->paciente_cep,
+            'numero' => $request->paciente_numero,
+            'telefone' => $request->paciente_telefone,
+            'cns' => $request->paciente_cns,
+            'data_nasc' => $request->paciente_data_nasc,
+            'obito' => $request->paciente_obito,
+            'primeira_avaliacao_medica' => $request->paciente_primeira_avaliacao_medica,
+            'isolamento_ate' => $request->paciente_isolamento_ate,
+            'data_inicio_sintomas' => $request->paciente_data_inicio_sintomas,
+            'data_coleta_exames' => $request->paciente_data_coleta_exames,
+            'unidade_sintomatica_id' => $request->paciente_unidade_sintomatica_id,
+            'convenio' => $request->paciente_convenio,
+            'unidade_saude_id' => $request->paciente_unidade_saude_id,
+            'tipo_exame' => $request->paciente_tipo_exame,
+            'data_resultado' => $request->paciente_data_resultado,
+            'resultado_exame' => $request->paciente_resultado_exame,
+            'grupo_risco' => $request->paciente_grupo_risco
+        ]);
         
         $atendimento = new Atendimento();
         $atendimento->data_hora_ligacao = $request->atendimento_data_hora_ligacao;
@@ -125,7 +127,7 @@ class PacienteController extends Controller
         $atendimento->falta_de_ar = $request->atendimento_falta_de_ar;
         $atendimento->observacoes_gerais = $request->atendimento_observacoes_gerais;
         $atendimento->orientacao_conduta = $request->atendimento_orientacao_conduta;
-        $atendimento->paciente_id = $request->atendimento_paciente_id;
+        $atendimento->paciente_id = $paciente->id;
         $atendimento->usuario_id = $request->atendimento_usuario_id;
         
         $atendimento->save();
@@ -141,16 +143,26 @@ class PacienteController extends Controller
                 'paciente_id' => $familia['paciente_id'],
                 ]);
         }
-        
-        $paciente_comorbidades = PacienteComorbidades::create([
-            'paciente_id' => $paciente->id,
-            'comorbidades_id' => $request->comorbidades_id
-        ]);
 
-        $atendimento_sinais = AtendimentoSinais::create([
-            'atendimento_id' => $atendimento->id,
-            'sinais_id' => $request->sinais_id
-        ]);
+        $comorbidades = $request->comorbidades;
+        $paciente_comorbidades = [];
+        foreach($comorbidades as $comorbidade)
+        {
+            $paciente_comorbidades[] = PacienteComorbidades::create([
+                'paciente_id' => $paciente->id,
+                'comorbidades_id' => $comorbidade['id']
+            ]);
+        }
+
+        $sinais = $request->sinais;
+        $atendimento_sinais = [];
+        foreach($sinais as $sinal)
+        {
+            $atendimento_sinais[] = AtendimentoSinais::create([
+                'atendimento_id' => $atendimento->id,
+                'sinais_id' => $sinal['id']
+            ]);
+        }
 
         return response()->json([$paciente,$atendimento, $familiars, $paciente_comorbidades, $atendimento_sinais], 201);
     }

@@ -28,19 +28,22 @@
                   >
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field
-                        v-model="dataNascimento"
+                        v-model="dataNascimentoFormatada"
+                        :error-messages="dataNascimentoErros"
                         label="Data de Nascimento"
                         prepend-icon="event"
                         readonly
                         v-bind="attrs"
                         v-on="on"
+                        required
                         @input="$v.dataNascimento.$touch()"
-                        @blur="$v.dataNascimento.$touch()"
+                        @blur="$v.dataNascimento.$touch(), dataNascimento = parseDate(dataNascimentoFormatada)"
                       ></v-text-field>
                     </template>
                     <v-date-picker
                       ref="picker"
                       v-model="dataNascimento"
+                      :title-date-format="formataData"
                       :max="new Date().toISOString().substr(0, 10)"
                       min="1950-01-01"
                     ></v-date-picker>
@@ -150,12 +153,13 @@
                   >
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field
-                        v-model="dataObito"
+                        v-model="dataObitoFormatada"
                         label="Óbito"
                         prepend-icon="event"
                         readonly
                         v-bind="attrs"
                         v-on="on"
+                        @blur="dataObito = parseDate(dataObitoFormatada)"
                       ></v-text-field>
                     </template>
                     <v-date-picker
@@ -179,12 +183,16 @@
                   >
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field
-                        v-model="dataInicioSintomas"
+                        v-model="dataInicioSintomasFormatada"
                         label="Data de Início dos Sintomas"
                         prepend-icon="event"
                         readonly
+                        :error-messages="dataInicioSintomasErros"
                         v-bind="attrs"
                         v-on="on"
+                        required
+                        @input="$v.dataInicioSintomas.$touch()"
+                        @blur="$v.dataInicioSintomas.$touch(), dataInicioSintomas = parseDate(dataInicioSintomasFormatada)"
                       ></v-text-field>
                     </template>
                     <v-date-picker
@@ -206,12 +214,16 @@
                   >
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field
-                        v-model="dataColetaExame"
+                        v-model="dataColetaExameFormatada"
                         label="Data da Coleta do Exame"
                         prepend-icon="event"
                         readonly
+                        :error-messages="dataColetaExameErros"
                         v-bind="attrs"
                         v-on="on"
+                        required
+                        @input="$v.dataColetaExame.$touch()"
+                        @blur="$v.dataColetaExame.$touch(), dataColetaExame = parseDate(dataColetaExameFormatada)"
                       ></v-text-field>
                     </template>
                     <v-date-picker
@@ -233,13 +245,14 @@
                   >
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field
-                        v-model="dataFimIsolamento"
+                        v-model="dataFimIsolamentoFormatada"
                         label="Isolamento até"
                         prepend-icon="event"
                         readonly
                         v-bind="attrs"
                         v-on="on"
                         disabled
+                        @blur="dataFimIsolamento = parseDate(dataFimIsolamentoFormatada)"
                       ></v-text-field>
                     </template>
                     <v-date-picker
@@ -258,6 +271,8 @@
                     :items="unidadesSintomaticas"
                     :error-messages="localErros"
                     label="Local"
+                    item-text="nome"
+                    item-value="id"
                     required
                     @change="$v.local.$touch()"
                     @blur="$v.local.$touch()"
@@ -280,6 +295,8 @@
                     :items="unidadesReferencia"
                     :error-messages="unidadeReferenciaErros"
                     label="Unidade de Referência"
+                    item-text="nome"
+                    item-value="id"
                     required
                     @change="$v.unidadeReferencia.$touch()"
                     @blur="$v.unidadeReferencia.$touch()"
@@ -309,12 +326,13 @@
                   >
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field
-                        v-model="dataResultado"
+                        v-model="dataResultadoFormatada"
                         label="Data do Resultado"
                         prepend-icon="event"
                         readonly
                         v-bind="attrs"
                         v-on="on"
+                        @blur="dataResultado = parseDate(dataResultadoFormatada)"
                       ></v-text-field>
                     </template>
                     <v-date-picker
@@ -385,6 +403,7 @@
                     v-model="comorbidade"
                     :items="comorbidades"
                     label="Comorbidades"
+                    item-text="nome"
                     multiple
                   ></v-select>
                 </v-col>
@@ -430,6 +449,7 @@
                     v-model="sinal"
                     :items="sinais"
                     label="Sinais"
+                    item-text="nome"
                     multiple
                   ></v-select>
                 </v-col>
@@ -470,75 +490,124 @@
                 </v-col>
               </v-row>
               <v-row>
-                <v-subheader>Familiares</v-subheader>
-              </v-row>
-              <v-row>
-                <v-col cols="4">
-                  <v-text-field
-                    v-model="nomeFamiliar"
-                    :error-messages="nomeFamiliarErros"
-                    label="Nome Completo"
-                    required
-                    @change="$v.nomeFamiliar.$touch()"
-                    @blur="$v.nomeFamiliar.$touch()"
-                  ></v-text-field>
-                </v-col>
-                <v-col cols="3">
-                  <v-select
-                    v-model="situacaoFamiliar"
-                    :items="['Sintomático', 'Assintomático']"
-                    :error-messages="situacaoFamiliarErros"
-                    label="Situação"
-                    required
-                    @change="$v.situacaoFamiliar.$touch()"
-                    @blur="$v.situacaoFamiliar.$touch()"
-                  ></v-select>
-                </v-col>
-                <v-col cols="3">
-                  <v-select
-                    v-model="exameFamiliar"
-                    :items="['Positivo', 'Negativo', 'Aguardando Resultado']"
-                    :error-messages="exameFamiliarErros"
-                    label="Exame"
-                    required
-                    @change="$v.exameFamiliar.$touch()"
-                    @blur="$v.exameFamiliar.$touch()"
-                  ></v-select>
-                </v-col>
-                <v-col cols="2">
-                  <v-btn
-                    class="ma-2"
-                    color="success"
-                    @click="adicionarFamiliar"
-                  >
-                    Adicionar
-                  </v-btn>
+                <v-col cols="12">
+                  <template>
+                    <v-data-table
+                      :headers="headers"
+                      :items="familiares"
+                      sort-by="calories"
+                      class="elevation-1"
+                      :items-per-page="5"
+                    >
+                      <template v-slot:top>
+                        <v-toolbar flat color="white">
+                          <v-toolbar-title>Familiares</v-toolbar-title>
+                          <v-divider
+                            class="mx-4"
+                            inset
+                            vertical
+                          ></v-divider>
+                          <v-spacer></v-spacer>
+                          <v-dialog v-model="dialog" max-width="500px">
+                            <template v-slot:activator="{ on, attrs }">
+                              <v-btn
+                                color="success"
+                                dark
+                                class="mb-2"
+                                v-bind="attrs"
+                                v-on="on"
+                              >Novo Familiar</v-btn>
+                            </template>
+                            <v-card>
+                              <v-card-title>
+                                <span class="headline">{{ formTitle }}</span>
+                              </v-card-title>
+
+                              <v-card-text>
+                                <v-container>
+                                  <v-row>
+                                    <v-col cols="12">
+                                      <v-text-field
+                                        v-model="nomeFamiliar"
+                                        label="Nome Completo"
+                                      ></v-text-field>
+                                    </v-col>
+                                  </v-row>
+                                  <v-row>
+                                    <v-col cols="6">
+                                      <v-select
+                                        v-model="situacaoFamiliar"
+                                        :items="['Sintomático', 'Assintomático']"
+                                        label="Situação"
+                                      ></v-select>
+                                    </v-col>
+                                    <v-col cols="6">
+                                      <v-select
+                                        v-model="exameFamiliar"
+                                        :items="['Positivo', 'Negativo', 'Aguardando Resultado']"
+                                        label="Exame"
+                                      ></v-select>
+                                    </v-col>
+                                  </v-row>
+                                </v-container>
+                              </v-card-text>
+
+                              <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn color="blue darken-1" text @click="close">Cancelar</v-btn>
+                                <v-btn color="blue darken-1" text @click="save">Salvar</v-btn>
+                              </v-card-actions>
+                            </v-card>
+                          </v-dialog>
+                        </v-toolbar>
+                      </template>
+                      <template v-slot:item.actions="{ item }">
+                        <v-icon
+                          small
+                          class="mr-2"
+                          @click="editItem(item)"
+                        >
+                          mdi-pencil
+                        </v-icon>
+                        <v-icon
+                          small
+                          @click="deleteItem(item)"
+                        >
+                          mdi-delete
+                        </v-icon>
+                      </template>
+                      <template v-slot:no-data>
+                        <v-btn color="primary" @click="initialize">Resetar</v-btn>
+                      </template>
+                    </v-data-table>
+                  </template>
                 </v-col>
               </v-row>
               <v-row>
                 <v-col cols="12">
-                  <v-simple-table dense>
-                    <template v-slot:default>
-                      <thead>
-                        <tr>
-                          <th class="text-left">Nome</th>
-                          <th class="text-left">Situação</th>
-                          <th class="text-left">Exame</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr v-for="item in situacaoFamilia" :key="item.nome">
-                          <td>{{ item.nome }}</td>
-                          <td>{{ item.sintomatico }}</td>
-                          <td>{{ item.exame }}</td>
-                        </tr>
-                      </tbody>
-                    </template>
-                  </v-simple-table>
+                  <v-textarea
+                    v-model="observacaoGeral"
+                    label="Observações Gerais"
+                    :error-messages="observacaoGeralErros"
+                    :counter="250"
+                    @change="$v.observacaoGeral.$touch()"
+                    @blur="$v.observacaoGeral.$touch()"
+                  ></v-textarea>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12">
+                  <v-textarea
+                    v-model="conduta"
+                    label="Orientação / Conduta"
+                    filled
+                    auto-grow
+                    disabled
+                  ></v-textarea>
                 </v-col>
               </v-row>
 
-              <v-btn class="mr-4 mt-2" color="primary" @click="submit">Registrar</v-btn>
+              <v-btn class="mr-4 mt-2" color="success" @click="registrar">Registrar</v-btn>
             </v-form>
           </v-container>
         </v-card>
@@ -567,6 +636,8 @@ export default {
     numero: { required },
     primeiraAvaliacaoMedica: { required },
     telefone: { required },
+    dataInicioSintomas: { required },
+    dataColetaExame: { required },
     local: { required },
     tipoConvenio: { required },
     unidadeReferencia: { required },
@@ -579,9 +650,7 @@ export default {
     febre: { required },
     tosse: { required },
     faltaArCansaco: { required },
-    nomeFamiliar: { required },
-    situacaoFamiliar: { required },
-    exameFamiliar: { required },
+    observacaoGeral: { maxLength: maxLength(250)  },
   },
 
   data: () => ({
@@ -596,6 +665,7 @@ export default {
     menuDataResultado: false,
     nome: '',
     dataNascimento: null,
+    dataNascimentoFormatada: null,
     cns: '',
     cep: '',
     logradouro: '',
@@ -605,15 +675,20 @@ export default {
     numero: '',
     telefone: '',
     dataObito: null,
+    dataObitoFormatada: null,
     primeiraAvaliacaoMedica: '',
     dataFimIsolamento: null,
+    dataFimIsolamentoFormatada: null,
     dataInicioSintomas: null,
+    dataInicioSintomasFormatada: null,
     dataColetaExame: null,
+    dataColetaExameFormatada: null,
     local: '',
     tipoConvenio: '',
     unidadeReferencia: '',
     tipoExame: '',
     dataResultado: null,
+    dataResultadoFormatada: null,
     resultadoExame: '',
     grupoRisco: '',
     dataLigacao: new Date().toLocaleString("pt-BR", {timeZone: "America/Sao_Paulo"}).slice(0, 10),
@@ -626,7 +701,21 @@ export default {
     febre: '',
     tosse: '',
     faltaArCansaco: '',
-    situacaoFamilia: [],
+    dialog: false,
+    headers: [
+      { text: 'Nome', value: 'nome' },
+      { text: 'Situação', value: 'sintomatico' },
+      { text: 'Exame', value: 'exame' },
+      { text: '', value: 'actions', sortable: false }
+    ],
+    familiares: [],
+    editedIndex: -1,
+    defaultItem: {
+      nome: '',
+      sintomatico: null,
+      exame: null
+    },
+    familiarSelecionado: [],
     nomeFamiliar: '',
     situacaoFamiliar: '',
     exameFamiliar: '',
@@ -638,6 +727,18 @@ export default {
     comorbidades: [],
     sinais: []
   }),
+
+  mounted() {
+    if(this.$route.params.paciente > 0)
+    {
+      this.carregaPaciente(this.$route.params.paciente);
+    }
+
+    this.carregaUnidadesReferencia();
+    this.carregaUnidadesSintomaticas();
+    this.carregaComorbidades();
+    this.carregaSinais();
+  },
 
   computed: {
       nomeErros () {
@@ -682,6 +783,18 @@ export default {
         const errors = []
         if (!this.$v.telefone.$dirty) return errors
         !this.$v.telefone.required && errors.push('O telefone é necessário.')
+        return errors
+      },
+      dataInicioSintomasErros () {
+        const errors = []
+        if (!this.$v.dataInicioSintomas.$dirty) return errors
+        !this.$v.dataInicioSintomas.required && errors.push('A data de início dos sintomas é necessária.')
+        return errors
+      },
+      dataColetaExameErros () {
+        const errors = []
+        if (!this.$v.dataColetaExame.$dirty) return errors
+        !this.$v.dataColetaExame.required && errors.push('A data de coleta do exame é necessária.')
         return errors
       },
       localErros () {
@@ -756,40 +869,77 @@ export default {
         !this.$v.faltaArCansaco.required && errors.push('A situação da falta de ar ou cansaço é necessária.')
         return errors
       },
-      nomeFamiliarErros () {
-        const errors = []
-        if (!this.$v.nomeFamiliar.$dirty) return errors
-        !this.$v.nomeFamiliar.required && errors.push('O nome do familiar é necessário.')
-        return errors
+      formTitle () {
+        return this.editedIndex === -1 ? 'Novo Familiar' : 'Editar Familiar'
       },
-      situacaoFamiliarErros () {
+      observacaoGeralErros () {
         const errors = []
-        if (!this.$v.situacaoFamiliar.$dirty) return errors
-        !this.$v.situacaoFamiliar.required && errors.push('A situação do familiar é necessário.')
-        return errors
-      },
-      exameFamiliarErros () {
-        const errors = []
-        if (!this.$v.exameFamiliar.$dirty) return errors
-        !this.$v.exameFamiliar.required && errors.push('A situação do exame do familiar é necessário.')
+        if (!this.$v.observacaoGeral.$dirty) return errors
+        !this.$v.observacaoGeral.maxLength && errors.push('Informe no máximo 250 caracteres.')
         return errors
       },
     },
 
     methods: {
-      adicionarFamiliar(){
-        let familiar = {
-          nome: this.nomeFamiliar,
-          sintomatico: this.situacaoFamiliar,
-          exame: this.exameFamiliar
-        }
-
-        this.nomeFamiliar = "";
-        this.situacaoFamiliar = "";
-        this.exameFamiliar = "";
-
-        this.situacaoFamilia.push(familiar)
+      async carregaPaciente(idPaciente){
+        let _this = this;
+        await this.axios.get('/paciente', { params: { id_paciente: idPaciente}})
+        .then(function (response) {
+          _this.unidadesReferencia = response.data;
+        })
+        .catch(function (error) {
+          console.log(error);
+        })
       },
+
+      formataData(value){
+        return this.moment(value).format("DD/MM/YYYY");
+      },
+
+      async carregaUnidadesReferencia(){
+        let _this = this;
+        await this.axios.get('/unidades_saude')
+        .then(function (response) {
+          _this.unidadesReferencia = response.data;
+        })
+        .catch(function (error) {
+          console.log(error);
+        })
+      },
+
+      async carregaUnidadesSintomaticas(){
+        let _this = this;
+        await this.axios.get('/unidades_sintomaticas')
+        .then(function (response) {
+          _this.unidadesSintomaticas = response.data;
+        })
+        .catch(function (error) {
+          console.log(error);
+        })
+      },
+
+      async carregaComorbidades(){
+        let _this = this;
+        await this.axios.get('/comorbidades')
+        .then(function (response) {
+          _this.comorbidades = response.data;
+        })
+        .catch(function (error) {
+          console.log(error);
+        })
+      },
+
+      async carregaSinais(){
+        let _this = this;
+        await this.axios.get('/sinais')
+        .then(function (response) {
+          _this.sinais = response.data;
+        })
+        .catch(function (error) {
+          console.log(error);
+        })
+      },
+
       async buscaEndereco(){
         if (this.$v.cep.$invalid)
           return;
@@ -810,15 +960,154 @@ export default {
 
         this.loadingEndereco = false;
       },
-      submit () {
+
+      async registrar () {
         this.$v.$touch()
-      }
+
+        if(this.$v.$invalid)
+          return;
+
+        let parametros = {
+          paciente_cep: this.cep,
+          paciente_nome: this.nome,
+          paciente_numero: this.numero,
+          paciente_telefone: this.telefone,
+          paciente_cns: this.cns,
+          paciente_data_nasc: this.dataNascimento,
+          paciente_obito: this.dataObito,
+          paciente_primeira_avaliacao_medica: this.primeiraAvaliacaoMedica,
+          paciente_isolamento_ate: this.dataFimIsolamento.format('YYYY-MM-DD'),
+          paciente_data_inicio_sintomas: this.dataInicioSintomas,
+          paciente_data_coleta_exames: this.dataColetaExame,
+          paciente_unidade_sintomatica_id: this.local,
+          paciente_convenio: this.tipoConvenio,
+          paciente_unidade_saude_id: this.unidadeReferencia,
+          paciente_tipo_exame: this.tipoExame,
+          paciente_data_resultado: this.dataResultado,
+          paciente_resultado_exame: this.resultadoExame,
+          paciente_grupo_risco: this.grupoRisco,
+          atendimento_data_hora_ligacao: this.dataLigacao.split('/').reverse().join('-') + " " + this.horaLigacao,
+          atendimento_isolamento: this.emIsolamento,
+          atendimento_orientacao: this.orientacao,
+          atendimento_apetite: this.apetite,
+          atendimento_febre: this.febre,
+          atendimento_tosse: this.tosse,
+          atendimento_falta_de_ar: this.faltaArCansaco,
+          atendimento_observacoes_gerais: this.observacaoGeral,
+          atendimento_orientacao_conduta: this.conduta,
+          atendimento_paciente_id: this.$route.params.paciente,
+          atendimento_usuario_id: this.$store.getters.getDadosUser.id,
+          familiares: this.familiares,
+          comorbidades: this.comorbidades,
+          sinais: this.sinais
+        }
+
+        console.log(parametros)
+
+        let _this = this;
+        await this.axios.post('/primeiro_cadastro', { parametros })
+        .then(function (response) {
+          if(response.status == 200)
+            _this.$router.push('home')
+          else
+            alert("Erro ao registrar atendimento!")
+        })
+        .catch(function (error) {
+          console.log(error);
+        })
+      },
+
+      initialize () {
+        this.familiares = [];
+      },
+
+      editItem (item) {
+        this.editedIndex = this.familiares.indexOf(item)
+
+        this.nomeFamiliar = this.familiares[this.editedIndex].nome;
+        this.situacaoFamiliar = this.familiares[this.editedIndex].sintomatico;
+        this.exameFamiliar = this.familiares[this.editedIndex].exame;
+
+        this.dialog = true
+      },
+
+      deleteItem (item) {
+        const index = this.familiares.indexOf(item)
+        confirm('Você tem certeza que deseja excluir este familiar?') && this.familiares.splice(index, 1)
+      },
+
+      close () {
+        this.dialog = false
+        this.$nextTick(() => {
+          this.$v.nomeFamiliar.$reset();
+          this.$v.situacaoFamiliar.$reset();
+          this.$v.exameFamiliar.$reset();
+          
+          this.nomeFamiliar = '';
+          this.situacaoFamiliar = '';
+          this.exameFamiliar = '';
+
+          this.editedIndex = -1;
+        })
+      },
+
+      save () {
+        if (this.$v.nomeFamiliar.$invalid || this.$v.situacaoFamiliar.$invalid || this.$v.exameFamiliar.$invalid)
+          return;
+        let editedItem = {
+          nome: this.nomeFamiliar,
+          sintomatico: this.situacaoFamiliar,
+          exame: this.exameFamiliar
+        }
+
+        if (this.editedIndex > -1) {
+          Object.assign(this.familiares[this.editedIndex], editedItem)
+        } else {
+          this.familiares.push(editedItem)
+        }
+        this.close()
+      },
+
+      parseDate (date) {
+        if (!date) return null
+
+        const [month, day, year] = date.split('/')
+        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
+      },
     },
 
     watch: {
       menuDataNascimento (val) {
         val && setTimeout(() => (this.$refs.picker.activePicker = 'YEAR'))
       },
-    },
+      dialog (val) {
+        val || this.close()
+      },
+
+      dataNascimento (val) {
+        this.dataNascimentoFormatada = this.formataData(this.dataNascimento)
+      },
+
+      dataObito (val) {
+        this.dataObitoFormatada = this.formataData(this.dataObito)
+      },
+
+      dataInicioSintomas (val) {
+        this.dataInicioSintomasFormatada = this.formataData(this.dataInicioSintomas)
+      },
+
+      dataColetaExame (val) {
+        this.dataFimIsolamento = this.moment(this.dataColetaExame).add(14, 'days')
+        this.dataColetaExameFormatada = this.formataData(this.dataColetaExame)
+      },
+
+      dataFimIsolamento (val) {
+        this.dataFimIsolamentoFormatada = this.formataData(this.dataFimIsolamento)
+      },
+
+      dataResultado (val) {
+        this.dataResultadoFormatada = this.formataData(this.dataResultado)
+      },
+    }
 };
 </script>

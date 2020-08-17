@@ -29,7 +29,7 @@
               <v-list-item-title>Home</v-list-item-title>
             </v-list-item>
 
-            <v-list-item to="atendimento">
+            <v-list-item :to="{name:'atendimento', params:{paciente:0}}">
               <v-list-item-icon>
                 <v-icon>mdi-account</v-icon>
               </v-list-item-icon>
