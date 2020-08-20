@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Atendimento;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Requests\AtendimentoFormRequest;
 
 class AtendimentoController extends Controller
 {
@@ -25,7 +26,7 @@ class AtendimentoController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(AtendimentoFormRequest $request)
     {
         $atendimento = Atendimento::create($request->all());
         return response()->json($atendimento, 201);
@@ -50,7 +51,7 @@ class AtendimentoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(AtendimentoFormRequest $request, $id)
     {
         $atendimento = Atendimento::findOrFail($id);
         $atendimento->fill($request->all());

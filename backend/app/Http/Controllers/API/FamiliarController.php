@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Familiar;
+use App\Http\Requests\FamiliarFormRequest;
 
 class FamiliarController extends Controller
 {
@@ -25,7 +26,7 @@ class FamiliarController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(FamiliarFormRequest $request)
     {
         $familiar = Familiar::create($request->all());
         return response()->json($familiar, 201);

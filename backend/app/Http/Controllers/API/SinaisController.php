@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Sinais;
+use App\Http\Requests\SinaisFormRequest;
 
 class SinaisController extends Controller
 {
@@ -25,7 +26,7 @@ class SinaisController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(SinaisFormRequest $request)
     {
         $sinais = Sinais::create($request->all());
         return response()->json($sinais, 201);
@@ -50,7 +51,7 @@ class SinaisController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(SinaisFormRequest $request, $id)
     {
         $sinais = Sinais::findOrFail($id);
         $sinais->fill($request->all());
