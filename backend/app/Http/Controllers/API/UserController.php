@@ -7,6 +7,7 @@ use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\UserFormRequest;
 
 class UserController extends Controller
 {
@@ -27,14 +28,14 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(UserFormRequest $request)
     {
         $usuario = User::create([
             'nome' => $request->nome,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'api_token' => Str::random(60),
-            'telefone' => $request->fone,
+            'telefone' => $request->telefone,
             'perfil' => $request->perfil,
             'unidade_saude_id' => $request->unidade_saude_id,
         ]);
@@ -59,7 +60,7 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UserFormRequest $request, $id)
     {
         $usuario = User::findOrFail($id);
         $usuario->fill($request->all);

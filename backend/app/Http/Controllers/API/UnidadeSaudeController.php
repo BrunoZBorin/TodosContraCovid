@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\UnidadeSaude;
+use App\Http\Requests\UnidadeSaudeFormRequest;
 
 class UnidadeSaudeController extends Controller
 {
@@ -25,19 +26,26 @@ class UnidadeSaudeController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(UnidadeSaudeFormRequest $request)
     {
-        $address = \Correios::cep($request->cep);
-        $unidadeSaude = new UnidadeSaude();
-        $unidadeSaude->fill($request->all());
-        if(!empty($address)) {
-            $unidadeSaude->logradouro = $address['logradouro'];
-            $unidadeSaude->bairro = $address['bairro'];
-            $unidadeSaude->cidade = $address['cidade'];
-            $unidadeSaude->estado = $address['uf'];
+        if(isset($validator) && $validator->fails()){
+            return response()->json($validator->messages(), 400);
+        }else{
+            $address = \Correios::cep($request->cep);
+            $unidadeSaude = new UnidadeSaude();
+            $unidadeSaude->fill($request->all());
+            if(!empty($address)) {
+                $unidadeSaude->logradouro = $address['logradouro'];
+                $unidadeSaude->bairro = $address['bairro'];
+                $unidadeSaude->cidade = $address['cidade'];
+                $unidadeSaude->estado = $address['uf'];
+                $unidadeSaude->save();
+                return response()->json($unidadeSaude, 201);
+            }else{
+                $message = "O cep não existe";
+                return response()->json($message, 400);
+            }
         }
-        $unidadeSaude->save();
-        return response()->json($unidadeSaude, 201);
     }
 
     /**
@@ -59,7 +67,7 @@ class UnidadeSaudeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UnidadeSaudeFormRequest $request, $id)
     {
         $unidadeSaude = UnidadeSaude::findOrFail($id);
         $endereco = \Correios::cep($request->cep);

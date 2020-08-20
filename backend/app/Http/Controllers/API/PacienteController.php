@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Paciente;
 use App\PacienteComorbidades;
 use Illuminate\Http\Request;
+use App\Http\Requests\PacienteFormRequest;
 
 class PacienteController extends Controller
 {
@@ -29,7 +30,7 @@ class PacienteController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(PacienteFormRequest $request)
     {
         $endereco = \Correios::cep($request->cep);
         $paciente = new Paciente();
@@ -39,9 +40,14 @@ class PacienteController extends Controller
             $paciente->bairro = $endereco['bairro'];
             $paciente->cidade = $endereco['cidade'];
             $paciente->estado = $endereco['uf'];
+        
+            $paciente->save();
+            return response()->json($paciente, 201);
+
+        }else{
+            $message = "O cep não existe";
+            return response()->json($message, 400);
         }
-        $paciente->save();
-        return response()->json($paciente, 201);
     }
 
     /**
@@ -63,7 +69,7 @@ class PacienteController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(PacienteFormRequest $request, $id)
     {
         $paciente = Paciente::findOrFail($id);
         $paciente->fill($request->all());
