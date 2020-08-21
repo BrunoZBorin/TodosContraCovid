@@ -23,7 +23,7 @@ class CreateAtendimentosTable extends Migration
             $table->enum('febre', ['ausente', 'pico_baixo', 'persistente']);
             $table->enum('tosse', ['ausente', 'fala_sem_tossir', 'fala_tossindo']);
             $table->enum('falta_de_ar', ['ausente', 'presente_ao_esforco', 'intensa_no_repouso']);
-            $table->string('observacoes_gerais');
+            $table->string('observacoes_gerais')->nullable();
             $table->enum('orientacao_conduta', ['manter_isolamento_domiciliar', 'encaminhar_unidade_sintomatica', 'encaminhar_SAMU']);
             
             $table->integer('paciente_id')->unsigned();

@@ -44,9 +44,9 @@ class AtendimentoFormRequest extends FormRequest
             'isolamento.in'=> 'Preencher com sim ou nao',
             'orientacao.in'=> 'Preencher com bem ou confuso ou sonolento',
             'apetite.in'=> 'Preencher com bom ou diminuido ou anorexico',
-            'febre.in'=> 'Preencher com ausente ou pico_baixo ou persistente',
-            'tosse.in'=> 'Preencher com ausente ou fala_sem_tossir ou fala_tossindo',
-            'falta_de_ar.in'=> 'Preencher com ausente ou presente_ao_esforco ou intensa_no_repouso',
+            'febre.in'=> 'Preencher com ausente ou pico baixo ou persistente',
+            'tosse.in'=> 'Preencher com ausente ou fala sem tossir ou fala tossindo',
+            'falta_de_ar.in'=> 'Preencher com ausente ou presente ao esforco ou intensa no repouso',
         ];
     }
 }

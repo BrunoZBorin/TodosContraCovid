@@ -25,7 +25,7 @@ class CreatePacientesTable extends Migration
             $table->string('estado');
             $table->string('cep');
             $table->string('telefone');
-            $table->date('obito');
+            $table->date('obito')->nullable();
             $table->date('primeira_avaliacao_medica');
             $table->date('isolamento_ate');
             $table->date('data_inicio_sintomas');

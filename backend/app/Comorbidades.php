@@ -10,4 +10,9 @@ class Comorbidades extends Model
         'nome'
     ];
     public $timestamps = false;
+
+    public function paciente_comorbidades()
+    {
+        return $this->hasMany(Paciente::class);
+    }
 }

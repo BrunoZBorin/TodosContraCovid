@@ -10,4 +10,10 @@ class Sinais extends Model
         'nome'
     ];
     public $timestamps = false;
+
+    public function atendimento_sinais()
+    {
+        return $this->hasMany(AtendimentoSinais::class);
+    }
+    
 }

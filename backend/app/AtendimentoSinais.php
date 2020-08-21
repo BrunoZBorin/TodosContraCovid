@@ -10,4 +10,14 @@ class AtendimentoSinais extends Model
         'atendimento_id', 'sinais_id'
     ];
     public $timestamps = false;
+
+    public function sinais()
+    {
+        return $this->belongsTo(Sinais::class);
+    }
+    
+    public function atendimento()
+    {
+        return $this->belongsTo(Atendimento::class);
+    }
 }

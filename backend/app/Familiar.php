@@ -9,5 +9,10 @@ class Familiar extends Model
     protected $fillable = [
         'nome', 'sintomatico', 'exame', 'paciente_id'
     ];
-    public $timestamps = false;   
+    public $timestamps = false;
+    
+    public function paciente()
+    {
+        return $this->belongsTo(Paciente::class);
+    }
 }
