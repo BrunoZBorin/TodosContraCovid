@@ -10,4 +10,10 @@ class UnidadeSintomatica extends Model
         'nome' ,'telefone', 'cep', 'logradouro', 'numero', 'bairro', 'cidade', 'estado'
     ];
     public $timestamps = false;
+
+    public function paciente()
+    {
+        return $this->hasMany(Paciente::class);
+    }
+    
 }

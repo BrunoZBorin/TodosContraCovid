@@ -13,4 +13,29 @@ class Paciente extends Model
         'data_resultado', 'resultado_exame', 'grupo_risco'
     ];
     public $timestamps = false;
+
+    public function unidade_sintomatica()
+    {
+        return $this->belongsTo(UnidadeSintomatica::class);
+    }
+    
+    public function unidade_saude()
+    {
+        return $this->belongsTo(UnidadeSaude::class);
+    }
+
+    public function paciente_comorbidades()
+    {
+        return $this->hasMany(PacienteComorbidades::class);
+    }
+
+    public function atendimento()
+    {
+        return $this->hasMany(Atendimento::class);
+    }
+
+    public function familiar()
+    {
+        return $this->hasMany(Familiar::class);
+    }
 }
