@@ -6,6 +6,8 @@ use App\Atendimento;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\AtendimentoFormRequest;
+use App\Paciente;
+use Carbon\Carbon;
 
 class AtendimentoController extends Controller
 {
@@ -29,6 +31,62 @@ class AtendimentoController extends Controller
     public function store(AtendimentoFormRequest $request)
     {
         $atendimento = Atendimento::create($request->all());
+        $pontos = 0;
+        switch ($request->febre) {
+            case 'ausente':
+                $pontos+=1;
+                break;
+            case 'pico_baixo' :
+                $pontos+=2;
+                break;
+            case 'persistente':
+                $pontos+=3;
+                break;
+        }
+        switch ($request->tosse) {
+            case 'ausente':
+                $pontos+=1;
+                break;
+            case 'fala_sem_tossir':
+                $pontos+=2;
+                break;
+            case'fala_tossindo':
+                $pontos+=3;
+                break;
+        }
+        switch ($request->falta_de_ar) {
+            case 'ausente':
+                $pontos+=1;
+                break;
+            case 'presente_ao_esforco':
+                $pontos+=2;
+                break;
+            case 'intensa_no_repouso':
+                $pontos+=3;
+                break;
+        }
+        $paciente = Paciente::findOrFail($request->paciente_id);
+        $idade = Carbon::parse($paciente['data_nasc'])->age;
+        if($idade<30){
+            $pontos+=1;
+        }
+        if($idade>=30 && $idade<60){
+            $pontos+=2;
+        }
+        if($pontos>=60){
+            $pontos+=3;
+        }
+               
+        if($pontos<=6){
+            $atendimento->orientacao_conduta = 'manter_isolamento_domiciliar'; 
+        }
+        if($pontos>=7 && $pontos<=9){
+            $atendimento->orientacao_conduta = 'encaminhar_unidade_sintomatica'; 
+        }
+        if($pontos>=10){
+            $atendimento->orientacao_conduta = 'encaminhar_SAMU';
+        }
+
         return response()->json($atendimento, 201);
     }
 

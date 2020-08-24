@@ -10,6 +10,7 @@ use App\Paciente;
 use App\PacienteComorbidades;
 use Illuminate\Http\Request;
 use App\Http\Requests\PacienteFormRequest;
+use Carbon\Carbon;
 
 class PacienteController extends Controller
 {
@@ -132,9 +133,63 @@ class PacienteController extends Controller
         $atendimento->tosse = $request->atendimento_tosse;
         $atendimento->falta_de_ar = $request->atendimento_falta_de_ar;
         $atendimento->observacoes_gerais = $request->atendimento_observacoes_gerais;
-        $atendimento->orientacao_conduta = $request->atendimento_orientacao_conduta;
         $atendimento->paciente_id = $paciente->id;
         $atendimento->usuario_id = $request->atendimento_usuario_id;
+        $pontos = 0;
+        switch ($request->atendimento_febre) {
+            case 'ausente':
+                $pontos+=1;
+                break;
+            case 'pico_baixo' :
+                $pontos+=2;
+                break;
+            case 'persistente':
+                $pontos+=3;
+                break;
+        }
+        switch ($request->atendimento_tosse) {
+            case 'ausente':
+                $pontos+=1;
+                break;
+            case 'fala_sem_tossir':
+                $pontos+=2;
+                break;
+            case'fala_tossindo':
+                $pontos+=3;
+                break;
+        }
+        switch ($request->atendimento_falta_de_ar) {
+            case 'ausente':
+                $pontos+=1;
+                break;
+            case 'presente_ao_esforco':
+                $pontos+=2;
+                break;  
+            case 'intensa_no_repouso':
+                $pontos+=3;
+                break;
+        }
+        //$paciente = Paciente::findOrFail($request->paciente_id);
+        $idade = Carbon::parse($paciente['data_nasc'])->age;
+        if($idade<30){
+            $pontos+=1;
+        }
+        if($idade>=30 && $idade<60){
+            $pontos+=2;
+        }
+        if($pontos>=60){
+            $pontos+=3;
+        }
+               
+        if($pontos<=6){
+            $atendimento->orientacao_conduta = 'manter_isolamento_domiciliar'; 
+        }
+        if($pontos>=7 && $pontos<=9){
+            $atendimento->orientacao_conduta = 'encaminhar_unidade_sintomatica'; 
+        }
+        if($pontos>=10){
+            $atendimento->orientacao_conduta = 'encaminhar_SAMU';
+        }
         
         $atendimento->save();
         
