@@ -12,7 +12,7 @@
       </v-snackbar>
       <v-container>
         <v-card>
-          <v-card-title class="headline">Usuário</v-card-title>
+          <v-card-title class="headline">Cadastro de Usuário</v-card-title>
           <v-card-text>
             <v-form>
               <v-row>
@@ -127,8 +127,11 @@ export default {
     }
   },
 
-  mounted() {
-    this.buscarUnidadesSaude();
+  async mounted() {
+    await this.buscarUnidadesSaude();
+    
+    if(this.$route.params.id)
+      this.buscaUsuario();
   },
 
   methods: {
@@ -138,14 +141,18 @@ export default {
       this.snackText = 'Operação realizada com sucesso!';
     },
 
-    buscarUnidadesSaude() {
-      this.axios.get('unidades_saude')
+    async buscarUnidadesSaude() {
+      await this.axios.get('unidades_saude')
       .then(response => {
         this.itemsUnidadesSaude = response.data;
       })
       .catch(error => {
         console.log(error);
       });
+    },
+
+    buscaUsuario() {
+      this.axios.get('users')
     },
 
     registrar() {

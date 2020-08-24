@@ -22,11 +22,52 @@ const routes = [
         name: "atendimento",
         component: () => import("../views/Atendimento")
       },
+
+      // Usuário
       {
-        path: "/usuario",
-        name: "usuario",
-        component: () => import("../views/Usuario")
-      }
+        path: "/usuario/listagem",
+        name: "usuario_listagem",
+        component: () => import("../views/Usuario/Listagem")
+      },
+      {
+        path: "/usuario/cadastro/:id",
+        name: "usuario_cadastro",
+        component: () => import("../views/Usuario/Cadastro"),
+        props: {
+          default: true
+        }
+      },
+
+      // Unidades de Saúde
+      {
+        path: "/unidades_saude/listagem",
+        name: "unidades_saude_listagem",
+        component: () => import("../views/UnidadesSaude/Listagem")
+      },
+      {
+        path: "/unidades_saude/cadastro/:id",
+        name: "unidades_saude_cadastro",
+        component: () => import("../views/UnidadesSaude/Cadastro"),
+        props: {
+          default: true
+        }
+      },
+
+      // Unidades Sintomática
+      {
+        path: "/unidades_sintomatica/listagem",
+        name: "unidades_sintomatica_listagem",
+        component: () => import("../views/UnidadesSintomatica/Listagem")
+      },
+      {
+        path: "/unidades_sintomatica/cadastro/:id",
+        name: "unidades_sintomatica_cadastro",
+        component: () => import("../views/UnidadesSintomatica/Cadastro"),
+        props: {
+          default: true
+        }
+      },
+
     ]
   }
 ];
