@@ -32,12 +32,25 @@
           nav
           dense
         >
-          <v-list-item :to="{name:'atendimento', params:{paciente:0}}">
-            <v-list-item-icon>
-              <v-icon>mdi-account</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>Atendimento</v-list-item-title>
-          </v-list-item>
+          <v-list-group
+            active-class="primary--text text--accent-4"
+            no-action
+          >
+            <template v-slot:activator>
+              <v-list-item>
+                <v-list-item-icon>
+                  <v-icon>mdi-account</v-icon>
+                </v-list-item-icon>
+                <v-list-item-title>Atendimento</v-list-item-title>
+              </v-list-item>
+            </template>
+            <v-list-item to="/atendimento/listagem">
+              <v-list-item-title>Listagem</v-list-item-title>
+            </v-list-item>
+            <v-list-item to="/atendimento/cadastro/0">
+              <v-list-item-title>Cadastro</v-list-item-title>
+            </v-list-item>
+          </v-list-group>
 
           <v-list-group
             active-class="primary--text text--accent-4"

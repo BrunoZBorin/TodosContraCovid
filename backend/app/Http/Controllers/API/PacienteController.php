@@ -201,7 +201,7 @@ class PacienteController extends Controller
                 'nome' => $familia['nome'],
                 'sintomatico' => $familia['sintomatico'],
                 'exame' => $familia['exame'],
-                'paciente_id' => $familia['paciente_id'],
+                'paciente_id' => $paciente->id,
                 ]);
         }
 
