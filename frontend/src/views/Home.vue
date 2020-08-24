@@ -2,6 +2,7 @@
     <v-main>
         <Menu />
         <router-view></router-view>
+        <div style="margin: 80px 0;"></div>
     </v-main>
 </template>
 

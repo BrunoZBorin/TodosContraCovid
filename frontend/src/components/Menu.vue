@@ -36,6 +36,13 @@
               <v-list-item-title>Atendimento</v-list-item-title>
             </v-list-item>
 
+            <v-list-item to="usuario">
+              <v-list-item-icon>
+                <v-icon>mdi-account</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>Usuário</v-list-item-title>
+            </v-list-item>
+
           </v-list-item-group>
         </v-list>
       </v-navigation-drawer>
