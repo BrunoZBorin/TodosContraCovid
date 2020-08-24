@@ -2,6 +2,32 @@
   <div class="atendimento">
     <v-app>
       <v-container>
+        <template>
+          <v-row justify="center">
+            <v-dialog
+              v-model="dialogConduta"
+              persistent
+              max-width="390"
+            >
+              <v-card>
+                <v-card-title class="headline">
+                  Orientação de Conduta
+                </v-card-title>
+                <v-card-text>{{conduta}}</v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn
+                    color="green darken-1"
+                    text
+                    @click="cliqueOK"
+                  >
+                    OK
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+          </v-row>
+        </template>
         <v-card>
           <v-card-title class="headline">Atendimento</v-card-title>
           <v-container>
@@ -77,25 +103,37 @@
                 <v-col cols="4">
                   <v-text-field
                     v-model="cidade"
+                    :error-messages="cidadeErros"
                     label="Cidade"
                     :loading="loadingEndereco"
                     disabled
+                    required
+                    @input="$v.cns.$touch()"
+                    @blur="$v.cns.$touch()"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="1">
                   <v-text-field
                     v-model="uf"
+                    :error-messages="ufErros"
                     label="UF"
                     :loading="loadingEndereco"
                     disabled
+                    required
+                    @input="$v.cns.$touch()"
+                    @blur="$v.cns.$touch()"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="4">
                   <v-text-field
                     v-model="bairro"
+                    :error-messages="bairroErros"
                     label="Bairro"
                     :loading="loadingEndereco"
                     disabled
+                    required
+                    @input="$v.cns.$touch()"
+                    @blur="$v.cns.$touch()"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -103,9 +141,13 @@
                 <v-col cols="9">
                   <v-text-field
                     v-model="logradouro"
+                    :error-messages="logradouroErros"
                     label="Logradouro"
                     :loading="loadingEndereco"
                     disabled
+                    required
+                    @input="$v.cns.$touch()"
+                    @blur="$v.cns.$touch()"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="3">
@@ -121,17 +163,38 @@
                 </v-col>
               </v-row>
               <v-row>
-                <v-col cols="6">
-                  <v-text-field
-                    v-model="primeiraAvaliacaoMedica"
-                    :error-messages="primeiraAvaliacaoMedicaErros"
-                    label="Primeira avaliação médica"
-                    required
-                    @input="$v.primeiraAvaliacaoMedica.$touch()"
-                    @blur="$v.primeiraAvaliacaoMedica.$touch()"
-                  ></v-text-field>
+                <v-col cols="4">
+                  <v-menu
+                    ref="menuPrimeiraAvaliacaoMedica"
+                    v-model="menuPrimeiraAvaliacaoMedica"
+                    :close-on-content-click="false"
+                    transition="scale-transition"
+                    offset-y
+                    min-width="290px"
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field
+                        v-model="dataPrimeiraAvaliacaoMedicaFormatada"
+                        label="Primeira Avaliação Médica"
+                        prepend-icon="event"
+                        readonly
+                        :error-messages="dataPrimeiraAvaliacaoMedicaErros"
+                        v-bind="attrs"
+                        v-on="on"
+                        required
+                        @input="$v.dataPrimeiraAvaliacaoMedica.$touch()"
+                        @blur="$v.dataPrimeiraAvaliacaoMedica.$touch(), dataPrimeiraAvaliacaoMedica = parseDate(dataPrimeiraAvaliacaoMedicaFormatada)"
+                      ></v-text-field>
+                    </template>
+                    <v-date-picker
+                      ref="picker"
+                      v-model="dataPrimeiraAvaliacaoMedica"
+                      :max="new Date().toISOString().substr(0, 10)"
+                      min="1950-01-01"
+                    ></v-date-picker>
+                  </v-menu>
                 </v-col>
-                <v-col cols="3">
+                <v-col cols="4">
                   <v-text-field
                     v-model="telefone"
                     :error-messages="telefoneErros"
@@ -142,7 +205,7 @@
                     @blur="$v.telefone.$touch()"
                   ></v-text-field>
                 </v-col>
-                <v-col cols="3">
+                <v-col cols="4">
                   <v-menu
                     ref="menuDataObito"
                     v-model="menuDataObito"
@@ -281,7 +344,7 @@
                 <v-col cols="4">
                   <v-select
                     v-model="tipoConvenio"
-                    :items="['SUS', 'Particular']"
+                    :items="itensTipoConvenio"
                     :error-messages="tipoConvenioErros"
                     label="Tipo de Convênio"
                     required
@@ -307,7 +370,7 @@
                 <v-col cols="4">
                   <v-select
                     v-model="tipoExame"
-                    :items="['PCR-RT', 'Sorologia', 'Teste Rápido']"
+                    :items="itensTipoExame"
                     :error-messages="tipoExameErros"
                     label="Tipo de Exame"
                     required
@@ -346,7 +409,7 @@
                 <v-col cols="4">
                   <v-select
                     v-model="resultadoExame"
-                    :items="['Positivo', 'Negativo', 'Aguardando Resultado']"
+                    :items="itensResultadoExame"
                     :error-messages="resultadoExameErros"
                     label="Resultado do Exame"
                     required
@@ -359,7 +422,7 @@
                 <v-col cols="4">
                   <v-select
                     v-model="grupoRisco"
-                    :items="['Sim', 'Não']"
+                    :items="itensGrupoRisco"
                     :error-messages="grupoRiscoErros"
                     label="Grupo de Risco"
                     required
@@ -412,7 +475,7 @@
                 <v-col cols="4">
                   <v-select
                     v-model="emIsolamento"
-                    :items="['Sim', 'Não']"
+                    :items="itensEmIsolamento"
                     :error-messages="emIsolamentoErros"
                     label="Em Isolamento"
                     required
@@ -423,7 +486,7 @@
                 <v-col cols="4">
                   <v-select
                     v-model="orientacao"
-                    :items="['Bem', 'Confuso', 'Sonolento']"
+                    :items="itensOrientacao"
                     :error-messages="orientacaoErros"
                     label="Orientação"
                     required
@@ -434,7 +497,7 @@
                 <v-col cols="4">
                   <v-select
                     v-model="apetite"
-                    :items="['Bom', 'Diminuído', 'Anorético']"
+                    :items="itensApetite"
                     :error-messages="apetiteErros"
                     label="Apetite"
                     required
@@ -458,7 +521,7 @@
                 <v-col cols="4">
                   <v-select
                     v-model="febre"
-                    :items="['Ausente', 'Um pico baixo', 'Febre persistente']"
+                    :items="itensFebre"
                     :error-messages="febreErros"
                     label="Febre"
                     required
@@ -469,7 +532,7 @@
                 <v-col cols="4">
                   <v-select
                     v-model="tosse"
-                    :items="['Ausente', 'Consegue falar sem tossir', 'Não completa uma frase sem tossir']"
+                    :items="itensTosse"
                     :error-messages="tosseErros"
                     label="Tosse"
                     required
@@ -480,7 +543,7 @@
                 <v-col cols="4">
                   <v-select
                     v-model="faltaArCansaco"
-                    :items="['Bom', 'Diminuído', 'Anorético']"
+                    :items="itensFaltaArCansaco"
                     :error-messages="faltaArCansacoErros"
                     label="Falta de Ar/Cansaço"
                     required
@@ -530,6 +593,7 @@
                                       <v-text-field
                                         v-model="nomeFamiliar"
                                         label="Nome Completo"
+                                        :error-messages="nomeFamiliarErros"
                                       ></v-text-field>
                                     </v-col>
                                   </v-row>
@@ -537,15 +601,17 @@
                                     <v-col cols="6">
                                       <v-select
                                         v-model="situacaoFamiliar"
-                                        :items="['Sintomático', 'Assintomático']"
+                                        :items="itensSituacaoFamiliar"
                                         label="Situação"
+                                        :error-messages="situacaoFamiliarErros"
                                       ></v-select>
                                     </v-col>
                                     <v-col cols="6">
                                       <v-select
                                         v-model="exameFamiliar"
-                                        :items="['Positivo', 'Negativo', 'Aguardando Resultado']"
+                                        :items="itensExameFamiliar"
                                         label="Exame"
+                                        :error-messages="exameFamiliarErros"
                                       ></v-select>
                                     </v-col>
                                   </v-row>
@@ -595,17 +661,6 @@
                   ></v-textarea>
                 </v-col>
               </v-row>
-              <v-row>
-                <v-col cols="12">
-                  <v-textarea
-                    v-model="conduta"
-                    label="Orientação / Conduta"
-                    filled
-                    auto-grow
-                    disabled
-                  ></v-textarea>
-                </v-col>
-              </v-row>
 
               <v-btn class="mr-4 mt-2" color="success" @click="registrar">Registrar</v-btn>
             </v-form>
@@ -633,10 +688,14 @@ export default {
     dataNascimento: { required },
     cns: { required },
     cep: { required, minLength: minLength(9), maxLength: maxLength(9)  },
+    cidade: { required },
+    uf: { required },
+    bairro: { required },
+    logradouro: { required },
     numero: { required },
-    primeiraAvaliacaoMedica: { required },
     telefone: { required },
     dataInicioSintomas: { required },
+    dataPrimeiraAvaliacaoMedica: { required },
     dataColetaExame: { required },
     local: { required },
     tipoConvenio: { required },
@@ -654,12 +713,15 @@ export default {
   },
 
   data: () => ({
+    idPaciente: 0,
     email: '',
     select: null,
     checkbox: false,
+    dialogConduta: false,
     menuDataNascimento: false,
     menuDataObito: false,
     menuDataInicioSintomas: false,
+    menuPrimeiraAvaliacaoMedica: false,
     menuDataColetaExame: false,
     menuDataFimIsolamento: false,
     menuDataResultado: false,
@@ -676,7 +738,8 @@ export default {
     telefone: '',
     dataObito: null,
     dataObitoFormatada: null,
-    primeiraAvaliacaoMedica: '',
+    dataPrimeiraAvaliacaoMedica: null,
+    dataPrimeiraAvaliacaoMedicaFormatada: null,
     dataFimIsolamento: null,
     dataFimIsolamentoFormatada: null,
     dataInicioSintomas: null,
@@ -719,20 +782,35 @@ export default {
     nomeFamiliar: '',
     situacaoFamiliar: '',
     exameFamiliar: '',
+    nomeFamiliarErros: '',
+    situacaoFamiliarErros: '',
+    exameFamiliarErros: '',
     observacaoGeral: '',
     conduta: '',
     loadingEndereco: false,
     unidadesSintomaticas: [],
     unidadesReferencia: [],
     comorbidades: [],
-    sinais: []
+    sinais: [],
+    itensTipoConvenio: [{text: 'SUS', value: 'SUS'}, {text: 'Particular', value: 'particular'}],
+    itensTipoExame: [{text: 'PCR-RT', value: 'PCR-RT'}, {text: 'Sorologia', value: 'sorologia'}, {text: 'Teste Rápido', value: 'teste_rapido'}],
+    itensResultadoExame: [{text: 'Positivo', value: 'positivo'}, {text: 'Negativo', value: 'negativo'}, {text: 'Aguardando Resultado', value: 'aguardando_resultado'}],
+    itensGrupoRisco: [{text: 'Sim', value: 'sim'}, {text: 'Não', value: 'nao'}],
+    itensEmIsolamento: [{text: 'Sim', value: 'sim'}, {text: 'Não', value: 'nao'}],
+    itensOrientacao: [{text: 'Bem', value: 'bem'}, {text: 'Confuso', value: 'confuso'}, {text: 'Sonolento', value: 'sonolento'}],
+    itensApetite: [{text: 'Bom', value: 'bom'}, {text: 'Diminuído', value: 'diminuido'}, {text: 'Anoréxico', value: 'anorexico'}],
+    itensFebre: [{text: 'Ausente', value: 'ausente'}, {text: 'Um Pico Baixo', value: 'pico_baixo'}, {text: 'Febre Persistente', value: 'persistente'}],
+    itensTosse: [{text: 'Ausente', value: 'ausente'}, {text: 'Consegue Falar Sem Tossir', value: 'fala_sem_tossir'}, {text: 'Não Completa uma Frase Sem Tossir', value: 'fala_tossindo'}],
+    itensFaltaArCansaco: [{text: 'Ausente', value: 'ausente'}, {text: 'Presente ao Esforço', value: 'presente_ao_esforco'}, {text: 'Intensa no Repouso', value: 'intensa_no_repouso'}],
+    itensSituacaoFamiliar: [{text: 'Sintomático', value: 'sintomatico'}, {text: 'Assintomático', value: 'assintomatico'}],
+    itensExameFamiliar: [{text: 'Positivo', value: 'positivo'}, {text: 'Negativo', value: 'negativo'}, {text: 'Aguardando Resultado', value: 'aguardando_resultado'}]
   }),
 
   mounted() {
-    if(this.$route.params.paciente > 0)
-    {
-      this.carregaPaciente(this.$route.params.paciente);
-    }
+    // if(this.$route.params.paciente > 0)
+    // {
+    //   this.carregaPaciente(this.$route.params.paciente);
+    // }
 
     this.carregaUnidadesReferencia();
     this.carregaUnidadesSintomaticas();
@@ -767,16 +845,40 @@ export default {
         !this.$v.cep.required && errors.push('O CEP é necessário.')
         return errors
       },
+      cidadeErros () {
+        const errors = []
+        if (!this.$v.cidade.$dirty) return errors
+        !this.$v.cidade.required && errors.push('O nome da cidade é necessário.')
+        return errors
+      },
+      ufErros () {
+        const errors = []
+        if (!this.$v.uf.$dirty) return errors
+        !this.$v.uf.required && errors.push('O nome do estado é necessário.')
+        return errors
+      },
+      bairroErros () {
+        const errors = []
+        if (!this.$v.bairro.$dirty) return errors
+        !this.$v.bairro.required && errors.push('O bairro é necessário.')
+        return errors
+      },
+      logradouroErros () {
+        const errors = []
+        if (!this.$v.logradouro.$dirty) return errors
+        !this.$v.logradouro.required && errors.push('O logradouro é necessário.')
+        return errors
+      },
       numeroErros () {
         const errors = []
         if (!this.$v.numero.$dirty) return errors
         !this.$v.numero.required && errors.push('O numero é necessário.')
         return errors
       },
-      primeiraAvaliacaoMedicaErros () {
+      dataPrimeiraAvaliacaoMedicaErros () {
         const errors = []
-        if (!this.$v.primeiraAvaliacaoMedica.$dirty) return errors
-        !this.$v.primeiraAvaliacaoMedica.required && errors.push('A avaliação médica é necessária.')
+        if (!this.$v.dataPrimeiraAvaliacaoMedica.$dirty) return errors
+        !this.$v.dataPrimeiraAvaliacaoMedica.required && errors.push('A data da primeira avaliação médica é necessária.')
         return errors
       },
       telefoneErros () {
@@ -881,13 +983,16 @@ export default {
     },
 
     methods: {
+      cliqueOK(){
+        this.dialogConduta = false;
+        this.$router.push('/home');
+      },
       async carregaPaciente(idPaciente){
-        let _this = this;
         await this.axios.get('/paciente', { params: { id_paciente: idPaciente}})
-        .then(function (response) {
-          _this.unidadesReferencia = response.data;
+        .then((response) => {
+          this.unidadesReferencia = response.data;
         })
-        .catch(function (error) {
+        .catch((error) => {
           console.log(error);
         })
       },
@@ -897,45 +1002,41 @@ export default {
       },
 
       async carregaUnidadesReferencia(){
-        let _this = this;
         await this.axios.get('/unidades_saude')
-        .then(function (response) {
-          _this.unidadesReferencia = response.data;
+        .then((response) => {
+          this.unidadesReferencia = response.data;
         })
-        .catch(function (error) {
+        .catch((error) => {
           console.log(error);
         })
       },
 
       async carregaUnidadesSintomaticas(){
-        let _this = this;
         await this.axios.get('/unidades_sintomaticas')
-        .then(function (response) {
-          _this.unidadesSintomaticas = response.data;
+        .then((response) => {
+          this.unidadesSintomaticas = response.data;
         })
-        .catch(function (error) {
+        .catch((error) => {
           console.log(error);
         })
       },
 
       async carregaComorbidades(){
-        let _this = this;
         await this.axios.get('/comorbidades')
-        .then(function (response) {
-          _this.comorbidades = response.data;
+        .then((response) => {
+          this.comorbidades = response.data;
         })
-        .catch(function (error) {
+        .catch((error) => {
           console.log(error);
         })
       },
 
       async carregaSinais(){
-        let _this = this;
         await this.axios.get('/sinais')
-        .then(function (response) {
-          _this.sinais = response.data;
+        .then((response) => {
+          this.sinais = response.data;
         })
-        .catch(function (error) {
+        .catch((error) => {
           console.log(error);
         })
       },
@@ -946,15 +1047,14 @@ export default {
 
         this.loadingEndereco = true;
 
-        let _this = this;
         await this.axios.get('/cep', { params: { cep: this.cep.replace("-", "") } })
-        .then(function (response) {
-          _this.cidade = response.data.cidade;
-          _this.uf = response.data.uf;
-          _this.bairro = response.data.bairro;
-          _this.logradouro = response.data.logradouro;
+        .then((response) => {
+          this.cidade = response.data.cidade;
+          this.uf = response.data.uf;
+          this.bairro = response.data.bairro;
+          this.logradouro = response.data.logradouro;
         })
-        .catch(function (error) {
+        .catch((error) => {
           console.log(error);
         })
 
@@ -967,7 +1067,7 @@ export default {
         if(this.$v.$invalid)
           return;
 
-        let parametros = {
+        const parametros = {
           paciente_cep: this.cep,
           paciente_nome: this.nome,
           paciente_numero: this.numero,
@@ -975,7 +1075,7 @@ export default {
           paciente_cns: this.cns,
           paciente_data_nasc: this.dataNascimento,
           paciente_obito: this.dataObito,
-          paciente_primeira_avaliacao_medica: this.primeiraAvaliacaoMedica,
+          paciente_primeira_avaliacao_medica: this.dataPrimeiraAvaliacaoMedica,
           paciente_isolamento_ate: this.dataFimIsolamento.format('YYYY-MM-DD'),
           paciente_data_inicio_sintomas: this.dataInicioSintomas,
           paciente_data_coleta_exames: this.dataColetaExame,
@@ -994,25 +1094,36 @@ export default {
           atendimento_tosse: this.tosse,
           atendimento_falta_de_ar: this.faltaArCansaco,
           atendimento_observacoes_gerais: this.observacaoGeral,
-          atendimento_orientacao_conduta: this.conduta,
-          atendimento_paciente_id: this.$route.params.paciente,
+          atendimento_paciente_id: this.idPaciente,
           atendimento_usuario_id: this.$store.getters.getDadosUser.id,
           familiares: this.familiares,
           comorbidades: this.comorbidades,
           sinais: this.sinais
         }
 
-        console.log(parametros)
+        await this.axios.post('/primeiro_cadastro', parametros )
+        .then((response) => {
+          if(response.status == 201)
+          {
+            if(response.data[1]['orientacao_conduta'] == 'manter_isolamento_domiciliar')
+            {
+              this.conduta = "Manter Isolamento Domiciliar.";
+            }
+            else if(response.data[1]['orientacao_conduta'] == 'encaminhar_unidade_sintomatica')
+            {
+              this.conduta = "Encaminhar paciente a uma unidade sintomática.";
+            }
+            else
+            {
+              this.conduta = "Encaminhar para o SAMU";
+            }
 
-        let _this = this;
-        await this.axios.post('/primeiro_cadastro', { parametros })
-        .then(function (response) {
-          if(response.status == 200)
-            _this.$router.push('home')
+            this.dialogConduta = true;
+          }
           else
             alert("Erro ao registrar atendimento!")
         })
-        .catch(function (error) {
+        .catch((error) => {
           console.log(error);
         })
       },
@@ -1039,10 +1150,6 @@ export default {
       close () {
         this.dialog = false
         this.$nextTick(() => {
-          this.$v.nomeFamiliar.$reset();
-          this.$v.situacaoFamiliar.$reset();
-          this.$v.exameFamiliar.$reset();
-          
           this.nomeFamiliar = '';
           this.situacaoFamiliar = '';
           this.exameFamiliar = '';
@@ -1052,8 +1159,24 @@ export default {
       },
 
       save () {
-        if (this.$v.nomeFamiliar.$invalid || this.$v.situacaoFamiliar.$invalid || this.$v.exameFamiliar.$invalid)
+        if (this.nomeFamiliar.trim() == '')
+        {
+          this.nomeFamiliarErros = "Informe o nome do familiar.";
           return;
+        }
+        
+        if (this.situacaoFamiliar == '')
+        {
+          this.situacaoFamiliarErros = "Informe a situação do familiar.";
+          return;
+        }
+
+        if (this.exameFamiliar == '')
+        {
+          this.exameFamiliarErros = "Informe a situação do exame do familiar.";
+          return;
+        }
+
         let editedItem = {
           nome: this.nomeFamiliar,
           sintomatico: this.situacaoFamiliar,
@@ -1088,6 +1211,10 @@ export default {
         this.dataNascimentoFormatada = this.formataData(this.dataNascimento)
       },
 
+      dataPrimeiraAvaliacaoMedica (val) {
+        this.dataPrimeiraAvaliacaoMedicaFormatada = this.formataData(this.dataPrimeiraAvaliacaoMedica)
+      },
+
       dataObito (val) {
         this.dataObitoFormatada = this.formataData(this.dataObito)
       },
@@ -1108,6 +1235,21 @@ export default {
       dataResultado (val) {
         this.dataResultadoFormatada = this.formataData(this.dataResultado)
       },
+
+      nomeFamiliar (val) {
+        if(this.nomeFamiliar.trim() != '')
+          this.nomeFamiliarErros = ''
+      },
+
+      situacaoFamiliar (val) {
+        if(this.situacaoFamiliar != null)
+          this.situacaoFamiliarErros = ''
+      },
+
+      exameFamiliar (val) {
+        if(this.exameFamiliar != null)
+          this.exameFamiliarErros = ''
+      }
     }
 };
 </script>

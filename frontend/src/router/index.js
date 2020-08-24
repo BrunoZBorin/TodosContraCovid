@@ -17,10 +17,19 @@ const routes = [
       requiresAuth: true
     },
     children: [
+      // Atendimento
       {
-        path: "/atendimento:paciente",
-        name: "atendimento",
-        component: () => import("../views/Atendimento")
+        path: "/atendimento/listagem",
+        name: "atendimento_listagem",
+        component: () => import("../views/Atendimento/Listagem")
+      },
+      {
+        path: "/atendimento/cadastro/:id",
+        name: "atendimento_cadastro",
+        component: () => import("../views/Atendimento/Cadastro"),
+        props: {
+          default: true
+        }
       },
 
       // Usuário
