@@ -88,7 +88,7 @@
             </v-form>
           </v-card-text>
           <v-card-actions>
-            <v-btn color="success" @click="registrar()">Registrar</v-btn>
+            <Modal @next="registrar" buttonTitle="Registrar" title="Atenção" text="Tem certeza que deseja continuar?"/>
           </v-card-actions>
         </v-card>
       </v-container>
@@ -96,9 +96,17 @@
 </template>
 
 <script>
+
 import { validationMixin } from 'vuelidate';
 import { required, maxLength, minLength } from 'vuelidate/lib/validators';
+
+import Modal from '../../components/Modal';
+
 export default {
+
+  components: {
+    Modal
+  },
 
   mixins: [validationMixin],
 
@@ -113,36 +121,41 @@ export default {
 
   data() {
     return {
+
       snack: false,
       snackColor: '',
       snackText: '',
+
       nome: '',
       email: '',
       password: '',
       telefone: '',
+
       perfil: '',
-      itemsPerfils: [ 'Municipal', 'Local' ],
+      itemsPerfils: [ 'Municipal', 'Monitoramento' ],
+
       unidade_saude: '',
       itemsUnidadesSaude: []
+
     }
   },
 
   async mounted() {
     await this.buscarUnidadesSaude();
     
-    if(this.$route.params.id)
-      this.buscaUsuario();
+    if(this.$route.params.id) this.buscaUsuario();
   },
 
   methods: {
+
     success() {
       this.snack = true;
       this.snackColor = 'success';
       this.snackText = 'Operação realizada com sucesso!';
     },
 
-    async buscarUnidadesSaude() {
-      await this.axios.get('unidades_saude')
+    buscarUnidadesSaude() {
+      this.axios.get('unidades_saude')
       .then(response => {
         this.itemsUnidadesSaude = response.data;
       })
@@ -152,10 +165,14 @@ export default {
     },
 
     buscaUsuario() {
-      this.axios.get('users')
+      this.axios.get('users');
     },
 
     registrar() {
+      this.$v.$touch();
+
+      if(this.$v.$invalid) return;
+
       const { nome, email, password, telefone, perfil, unidade_saude } = this;
 
       this.axios.post('users', {
@@ -168,11 +185,16 @@ export default {
       })
       .then(response => {
         alert("Operação realizada com sucesso!");
-        this.$router.push('home');
+        this.$router.push('/home');
       })
       .catch(error => {
         const warnings = error.response.data.errors;
         let msgError = "";
+
+        if(!warnings) {
+          alert("Erro");
+          return;
+        }
         
         Object.keys(warnings).forEach(warning => {
           msgError += `${warning}: ${warnings[warning][0]} \n`;
@@ -181,6 +203,7 @@ export default {
         alert(msgError);
       });
     }
+
   },
 
   computed: {
