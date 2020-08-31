@@ -1,9 +1,5 @@
 <template>
   <div>
-    <v-snackbar v-model="snack" :timeout="3000" :color="snackColor" top multiLine>
-      {{ snackText }}
-      <v-btn text @click="snack = false">Fechar</v-btn>
-    </v-snackbar>
     <v-container>
       <v-card>
         <v-card-title class="headline">Cadastro das Unidades de Saúdes</v-card-title>
@@ -18,6 +14,7 @@
                   required 
                   @input="$v.nome.$touch()"
                   @blur="$v.nome.$touch()"
+                  dense
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -32,6 +29,7 @@
                   required
                   @input="$v.cep.$touch()"
                   @blur="$v.cep.$touch(), buscaEndereco()"
+                  dense
                 ></v-text-field>
               </v-col>
               <v-col cols="4">
@@ -44,6 +42,7 @@
                   required
                   @input="$v.cns.$touch()"
                   @blur="$v.cns.$touch()"
+                  dense
                 ></v-text-field>
               </v-col>
               <v-col cols="1">
@@ -56,6 +55,7 @@
                   required
                   @input="$v.cns.$touch()"
                   @blur="$v.cns.$touch()"
+                  dense
                 ></v-text-field>
               </v-col>
               <v-col cols="4">
@@ -68,6 +68,7 @@
                   required
                   @input="$v.cns.$touch()"
                   @blur="$v.cns.$touch()"
+                  dense
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -82,6 +83,7 @@
                   required
                   @input="$v.cns.$touch()"
                   @blur="$v.cns.$touch()"
+                  dense
                 ></v-text-field>
               </v-col>
               <v-col cols="3">
@@ -93,6 +95,7 @@
                   required
                   @input="$v.numero.$touch()"
                   @blur="$v.numero.$touch()"
+                  dense
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -106,13 +109,21 @@
                   required
                   @input="$v.telefone.$touch()"
                   @blur="$v.telefone.$touch()"
+                  dense
                 ></v-text-field>
               </v-col>
             </v-row>
           </v-form>
         </v-card-text>
         <v-card-actions>
-          <Modal @next="registrar" buttonTitle="Registrar" title="Atenção" text="Tem certeza que deseja continuar?"/>
+          <v-btn
+            class="mr-4 mt-2"
+            color="success"
+            dark
+            @click="registrar"
+          >
+            Registrar
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-container>
@@ -124,13 +135,7 @@
   import { validationMixin } from 'vuelidate';
   import { required, maxLength, minLength } from 'vuelidate/lib/validators';
 
-  import Modal from '../../components/Modal';
-
   export default {
-
-    components: {
-      Modal
-    },
 
     mixins: [validationMixin],
 
@@ -147,11 +152,6 @@
 
     data() {
       return {
-
-        snack: false,
-        snackColor: '',
-        snackText: '',
-
         nome: '',
         cep: '',
         logradouro: '',
@@ -165,12 +165,33 @@
       }
     },
 
+    async mounted() {
+      if(this.$route.params.id > 0) this.findById(this.$route.params.id);
+    },
+
     methods: {
 
-      success() {
-        this.snack = true;
-        this.snackColor = 'success';
-        this.snackText = 'Operação realizada com sucesso!';
+      async findById(id) {
+        const response = await this.axios.get(`unidades_saude/${id}`)
+        .catch(err => {
+          console.log(err);
+          this.$swal(
+            'Erro',
+            'Ocorreu um problema inesperado!',
+            'error'
+          );
+        });
+        
+        const { nome, cep, cidade, estado, bairro, logradouro, numero, telefone } = response.data;
+
+        this.nome = nome;
+        this.cep = cep;
+        this.cidade = cidade;
+        this.uf = estado;
+        this.bairro = bairro;
+        this.logradouro = logradouro;
+        this.numero = numero;
+        this.telefone = telefone;
       },
 
       async buscaEndereco(){
@@ -198,9 +219,21 @@
 
         if(this.$v.$invalid) return;
 
+        const result = await this.$swal({
+          title: 'Tem ceteza que deseja continuar?',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Sim',
+          cancelButtonText: 'Não'
+        });
+
+        if (!result.value) return;
+
         const { nome, telefone, cep, logradouro, numero, bairro, cidade, uf: estado } = this;
 
-        const response = await this.axios.post(
+        this.axios.post(
           'unidades_saude',
           {
             nome,
@@ -214,18 +247,22 @@
           }
         )
         .then(response => {
-          alert("Operação realizada com sucesso!");
+          this.$swal(
+            'Criado!',
+            'Operação realizada com sucesso!',
+            'success'
+          )
+
           this.$router.push('/home');
         })
         .catch(error => {
-          const warnings = error.response.data.errors;
-          let msgError = "";
-          
-          Object.keys(warnings).forEach(warning => {
-            msgError += `${warning}: ${warnings[warning][0]} \n`;
-          });
-
-          alert(msgError);
+          console.log(error);
+          this.$swal(
+            'Erro',
+            'Ocorreu um problema inesperado!',
+            'error'
+          );
+          return;
         });
       }
     },

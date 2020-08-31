@@ -64,13 +64,13 @@ const routes = [
 
       // Unidades Sintomática
       {
-        path: "/unidades_sintomatica/listagem",
-        name: "unidades_sintomatica_listagem",
+        path: "/unidades_sintomaticas/listagem",
+        name: "unidades_sintomaticas_listagem",
         component: () => import("../views/UnidadesSintomatica/Listagem")
       },
       {
-        path: "/unidades_sintomatica/cadastro/:id",
-        name: "unidades_sintomatica_cadastro",
+        path: "/unidades_sintomaticas/cadastro/:id",
+        name: "unidades_sintomaticas_cadastro",
         component: () => import("../views/UnidadesSintomatica/Cadastro"),
         props: {
           default: true
