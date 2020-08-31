@@ -3,6 +3,8 @@
 import Vue from "vue";
 import axios from "axios";
 
+import store from "../store";
+
 // Full config:  https://github.com/axios/axios#request-config
 // axios.defaults.baseURL = process.env.baseURL || process.env.apiUrl || '';
 // axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;
@@ -24,10 +26,12 @@ const _axios = axios.create(config);
 _axios.interceptors.request.use(
   function(config) {
     // Do something before request is sent
+    store.dispatch('setLoading');
     return config;
   },
   function(error) {
     // Do something with request error
+    store.dispatch('setLoading');
     return Promise.reject(error);
   }
 );
@@ -36,10 +40,12 @@ _axios.interceptors.request.use(
 _axios.interceptors.response.use(
   function(response) {
     // Do something with response data
+    store.dispatch('setLoading');
     return response;
   },
   function(error) {
     // Do something with response error
+    store.dispatch('setLoading');
     return Promise.reject(error);
   }
 );

@@ -57,25 +57,72 @@
     },
 
     mounted() {
-      this.getUsuarios();
+      this.load();
     },
 
     methods: {
-      async getUsuarios() {
+      async load() {
         this.loading = true;
 
-        const response = await this.axios.get('users');
+        const response = await this.axios.get('users')
+        .catch(err => {
+          console.log(err);
+          this.$swal(
+            'Erro',
+            'Ocorreu um problema inesperado!',
+            'error'
+          );
+        });
+        
         this.loading = false;
-
         this.items = response.data;
       },
 
       editItem(item) {
-        
+        this.$router.push(`/usuario/cadastro/${item.id}`)
       },
 
-      deleteItem(item) {
-        
+      async deleteItem(item) {
+        if(this.$store.state.dadosUser.id === item.id) {
+          this.$swal(
+            'Atenção!',
+            'Você não pode deletar o seu próprio usuário!',
+            'warning'
+          )
+          return;
+        }
+
+        const result = await this.$swal({
+          title: 'Tem ceteza que deseja continuar?',
+          text: "Você não poderá reverter isso!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Sim',
+          cancelButtonText: 'Não'
+        });
+
+        if (!result.value) return;
+
+        this.axios.delete(`users/${item.id}`)
+        .then(() => {
+          this.$swal(
+            'Deletado!',
+            'Operação realizada com sucesso!',
+            'success'
+          );
+
+          this.load();
+        })
+        .catch(err => {
+          console.log(err);
+          this.$swal(
+            'Erro',
+            'Ocorreu um problema inesperado!',
+            'error'
+          );
+        });
       }
     }
   }

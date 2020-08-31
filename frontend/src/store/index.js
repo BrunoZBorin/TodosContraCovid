@@ -6,7 +6,8 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     dadosUser: null,
-    token: ''
+    token: '',
+    loading: false
   },
   mutations: {},
   actions: {
@@ -27,11 +28,14 @@ export default new Vuex.Store({
           reject(error);
         });
       });
+    },
+    setLoading({state}) {
+      state.loading = !state.loading;
     }
   },
   modules: {},
   getters: {
     isLoggedIn: state => !!state.token,
-    getDadosUser: state => state.dadosUser
+    getDadosUser: state => state.dadosUser,
   }
 });

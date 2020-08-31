@@ -1,15 +1,5 @@
 <template>
     <div class="usuario">
-      <v-snackbar
-        v-model="snack" 
-        :timeout="3000" 
-        :color="snackColor" 
-        top
-        multiLine
-      >
-        {{ snackText }}
-        <v-btn text @click="snack = false">Fechar</v-btn>
-      </v-snackbar>
       <v-container>
         <v-card>
           <v-card-title class="headline">Cadastro de Usuário</v-card-title>
@@ -24,6 +14,7 @@
                     required
                     @input="$v.nome.$touch()"
                     @blur="$v.nome.$touch()"
+                    dense
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" md="12">
@@ -35,6 +26,7 @@
                     autocomplete="new-email"
                     @input="$v.email.$touch()"
                     @blur="$v.email.$touch()"
+                    dense
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" md="12">
@@ -47,6 +39,7 @@
                     autocomplete="new-password"
                     @input="$v.password.$touch()"
                     @blur="$v.password.$touch()"
+                    dense
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" md="12">
@@ -58,6 +51,7 @@
                     required
                     @input="$v.telefone.$touch()"
                     @blur="$v.telefone.$touch()"
+                    dense
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" md="12">
@@ -69,6 +63,7 @@
                     required
                     @change="$v.perfil.$touch()"
                     @blur="$v.perfil.$touch()"
+                    dense
                   ></v-select>
                 </v-col>
                 <v-col cols="12" md="12">
@@ -82,13 +77,21 @@
                     required
                     @change="$v.unidade_saude.$touch()"
                     @blur="$v.unidade_saude.$touch()"
+                    dense
                   ></v-select>
                 </v-col>
               </v-row>
             </v-form>
           </v-card-text>
           <v-card-actions>
-            <Modal @next="registrar" buttonTitle="Registrar" title="Atenção" text="Tem certeza que deseja continuar?"/>
+            <v-btn
+              class="mr-4 mt-2"
+              color="success"
+              dark
+              @click="registrar"
+            >
+              Registrar
+            </v-btn>
           </v-card-actions>
         </v-card>
       </v-container>
@@ -100,13 +103,7 @@
 import { validationMixin } from 'vuelidate';
 import { required, maxLength, minLength } from 'vuelidate/lib/validators';
 
-import Modal from '../../components/Modal';
-
 export default {
-
-  components: {
-    Modal
-  },
 
   mixins: [validationMixin],
 
@@ -121,18 +118,13 @@ export default {
 
   data() {
     return {
-
-      snack: false,
-      snackColor: '',
-      snackText: '',
-
       nome: '',
       email: '',
       password: '',
       telefone: '',
 
       perfil: '',
-      itemsPerfils: [ 'Municipal', 'Monitoramento' ],
+      itemsPerfils: [ 'MUNICIPAL', 'MONITORAMENTO' ],
 
       unidade_saude: '',
       itemsUnidadesSaude: []
@@ -142,17 +134,11 @@ export default {
 
   async mounted() {
     await this.buscarUnidadesSaude();
-    
-    if(this.$route.params.id) this.buscaUsuario();
+
+    if(this.$route.params.id > 0) this.findById(this.$route.params.id);
   },
 
   methods: {
-
-    success() {
-      this.snack = true;
-      this.snackColor = 'success';
-      this.snackText = 'Operação realizada com sucesso!';
-    },
 
     buscarUnidadesSaude() {
       this.axios.get('unidades_saude')
@@ -164,14 +150,42 @@ export default {
       });
     },
 
-    buscaUsuario() {
-      this.axios.get('users');
+    async findById(id) {
+      const response = await this.axios.get(`users/${id}`)
+      .catch(err => {
+        console.log(err);
+        this.$swal(
+          'Erro',
+          'Ocorreu um problema inesperado!',
+          'error'
+        );
+      });
+      
+      const { nome, email, telefone, perfil, unidade_saude_id } = response.data;
+
+      this.nome = nome;
+      this.email = email;
+      this.telefone = telefone;
+      this.perfil = String(perfil).toUpperCase();
+      this.unidade_saude = unidade_saude_id;
     },
 
-    registrar() {
+    async registrar() {
       this.$v.$touch();
 
       if(this.$v.$invalid) return;
+
+      const result = await this.$swal({
+        title: 'Tem ceteza que deseja continuar?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sim',
+        cancelButtonText: 'Não'
+      });
+
+      if (!result.value) return;
 
       const { nome, email, password, telefone, perfil, unidade_saude } = this;
 
@@ -184,23 +198,22 @@ export default {
         unidade_saude_id: unidade_saude
       })
       .then(response => {
-        alert("Operação realizada com sucesso!");
+        this.$swal(
+          'Criado!',
+          'Operação realizada com sucesso!',
+          'success'
+        )
+
         this.$router.push('/home');
       })
       .catch(error => {
-        const warnings = error.response.data.errors;
-        let msgError = "";
-
-        if(!warnings) {
-          alert("Erro");
-          return;
-        }
-        
-        Object.keys(warnings).forEach(warning => {
-          msgError += `${warning}: ${warnings[warning][0]} \n`;
-        });
-
-        alert(msgError);
+        console.log(error);
+        this.$swal(
+          'Erro',
+          'Ocorreu um problema inesperado!',
+          'error'
+        );
+        return;
       });
     }
 

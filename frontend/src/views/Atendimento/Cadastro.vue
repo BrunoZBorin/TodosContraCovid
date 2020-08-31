@@ -39,6 +39,7 @@
                     :error-messages="nomeErros"
                     label="Nome"
                     required
+                    :readonly="modoVisualizacao"
                     @input="$v.nome.$touch()"
                     @blur="$v.nome.$touch()"
                   ></v-text-field>
@@ -82,6 +83,7 @@
                     label="CNS"
                     v-mask="'### #### #### ####'"
                     required
+                    :readonly="modoVisualizacao"
                     @input="$v.cns.$touch()"
                     @blur="$v.cns.$touch()"
                   ></v-text-field>
@@ -96,6 +98,7 @@
                     v-mask="'#####-###'"
                     :counter="9"
                     required
+                    :readonly="modoVisualizacao"
                     @input="$v.cep.$touch()"
                     @blur="$v.cep.$touch(), buscaEndereco()"
                   ></v-text-field>
@@ -106,7 +109,7 @@
                     :error-messages="cidadeErros"
                     label="Cidade"
                     :loading="loadingEndereco"
-                    disabled
+                    readonly
                     required
                     @input="$v.cns.$touch()"
                     @blur="$v.cns.$touch()"
@@ -118,7 +121,7 @@
                     :error-messages="ufErros"
                     label="UF"
                     :loading="loadingEndereco"
-                    disabled
+                    readonly
                     required
                     @input="$v.cns.$touch()"
                     @blur="$v.cns.$touch()"
@@ -130,7 +133,7 @@
                     :error-messages="bairroErros"
                     label="Bairro"
                     :loading="loadingEndereco"
-                    disabled
+                    readonly
                     required
                     @input="$v.cns.$touch()"
                     @blur="$v.cns.$touch()"
@@ -144,7 +147,7 @@
                     :error-messages="logradouroErros"
                     label="Logradouro"
                     :loading="loadingEndereco"
-                    disabled
+                    readonly
                     required
                     @input="$v.cns.$touch()"
                     @blur="$v.cns.$touch()"
@@ -157,6 +160,7 @@
                     label="Numero"
                     v-mask="'##########'"
                     required
+                    :readonly="modoVisualizacao"
                     @input="$v.numero.$touch()"
                     @blur="$v.numero.$touch()"
                   ></v-text-field>
@@ -201,6 +205,7 @@
                     label="Telefone"
                     v-mask="'## #########'"
                     required
+                    :readonly="modoVisualizacao"
                     @input="$v.telefone.$touch()"
                     @blur="$v.telefone.$touch()"
                   ></v-text-field>
@@ -313,8 +318,6 @@
                         prepend-icon="event"
                         readonly
                         v-bind="attrs"
-                        v-on="on"
-                        disabled
                         @blur="dataFimIsolamento = parseDate(dataFimIsolamentoFormatada)"
                       ></v-text-field>
                     </template>
@@ -337,6 +340,7 @@
                     item-text="nome"
                     item-value="id"
                     required
+                    :readonly="modoVisualizacao"
                     @change="$v.local.$touch()"
                     @blur="$v.local.$touch()"
                   ></v-select>
@@ -348,6 +352,7 @@
                     :error-messages="tipoConvenioErros"
                     label="Tipo de Convênio"
                     required
+                    :readonly="modoVisualizacao"
                     @change="$v.tipoConvenio.$touch()"
                     @blur="$v.tipoConvenio.$touch()"
                   ></v-select>
@@ -361,6 +366,7 @@
                     item-text="nome"
                     item-value="id"
                     required
+                    :readonly="modoVisualizacao"
                     @change="$v.unidadeReferencia.$touch()"
                     @blur="$v.unidadeReferencia.$touch()"
                   ></v-select>
@@ -374,6 +380,7 @@
                     :error-messages="tipoExameErros"
                     label="Tipo de Exame"
                     required
+                    :readonly="modoVisualizacao"
                     @change="$v.tipoExame.$touch()"
                     @blur="$v.tipoExame.$touch()"
                   ></v-select>
@@ -413,6 +420,7 @@
                     :error-messages="resultadoExameErros"
                     label="Resultado do Exame"
                     required
+                    :readonly="modoVisualizacao"
                     @change="$v.resultadoExame.$touch()"
                     @blur="$v.resultadoExame.$touch()"
                   ></v-select>
@@ -426,6 +434,7 @@
                     :error-messages="grupoRiscoErros"
                     label="Grupo de Risco"
                     required
+                    :readonly="modoVisualizacao"
                     @change="$v.grupoRisco.$touch()"
                     @blur="$v.grupoRisco.$touch()"
                   ></v-select>
@@ -439,8 +448,6 @@
                         prepend-icon="event"
                         readonly
                         v-bind="attrs"
-                        v-on="on"
-                        disabled
                       ></v-text-field>
                     </template>
                   </v-menu>
@@ -453,8 +460,6 @@
                         label="Hora da Ligação"
                         readonly
                         v-bind="attrs"
-                        v-on="on"
-                        disabled
                       ></v-text-field>
                     </template>
                   </v-menu>
@@ -468,6 +473,7 @@
                     label="Comorbidades"
                     item-text="nome"
                     multiple
+                    :readonly="modoVisualizacao"
                   ></v-select>
                 </v-col>
               </v-row>
@@ -479,6 +485,7 @@
                     :error-messages="emIsolamentoErros"
                     label="Em Isolamento"
                     required
+                    :readonly="modoVisualizacao"
                     @change="$v.emIsolamento.$touch()"
                     @blur="$v.emIsolamento.$touch()"
                   ></v-select>
@@ -490,6 +497,7 @@
                     :error-messages="orientacaoErros"
                     label="Orientação"
                     required
+                    :readonly="modoVisualizacao"
                     @change="$v.orientacao.$touch()"
                     @blur="$v.orientacao.$touch()"
                   ></v-select>
@@ -501,6 +509,7 @@
                     :error-messages="apetiteErros"
                     label="Apetite"
                     required
+                    :readonly="modoVisualizacao"
                     @change="$v.apetite.$touch()"
                     @blur="$v.apetite.$touch()"
                   ></v-select>
@@ -514,6 +523,7 @@
                     label="Sinais"
                     item-text="nome"
                     multiple
+                    :readonly="modoVisualizacao"
                   ></v-select>
                 </v-col>
               </v-row>
@@ -525,6 +535,7 @@
                     :error-messages="febreErros"
                     label="Febre"
                     required
+                    :readonly="modoVisualizacao"
                     @change="$v.febre.$touch()"
                     @blur="$v.febre.$touch()"
                   ></v-select>
@@ -536,6 +547,7 @@
                     :error-messages="tosseErros"
                     label="Tosse"
                     required
+                    :readonly="modoVisualizacao"
                     @change="$v.tosse.$touch()"
                     @blur="$v.tosse.$touch()"
                   ></v-select>
@@ -547,6 +559,7 @@
                     :error-messages="faltaArCansacoErros"
                     label="Falta de Ar/Cansaço"
                     required
+                    :readonly="modoVisualizacao"
                     @change="$v.faltaArCansaco.$touch()"
                     @blur="$v.faltaArCansaco.$touch()"
                   ></v-select>
@@ -572,7 +585,7 @@
                           ></v-divider>
                           <v-spacer></v-spacer>
                           <v-dialog v-model="dialog" max-width="500px">
-                            <template v-slot:activator="{ on, attrs }">
+                            <template v-slot:activator="{ on, attrs }" v-if="!modoVisualizacao">
                               <v-btn
                                 color="success"
                                 dark
@@ -627,7 +640,7 @@
                           </v-dialog>
                         </v-toolbar>
                       </template>
-                      <template v-slot:item.actions="{ item }">
+                      <template v-slot:item.actions="{ item }" v-if="!modoVisualizacao">
                         <v-icon
                           small
                           class="mr-2"
@@ -642,7 +655,7 @@
                           mdi-delete
                         </v-icon>
                       </template>
-                      <template v-slot:no-data>
+                      <template v-slot:no-data v-if="!modoVisualizacao">
                         <v-btn color="primary" @click="initialize">Resetar</v-btn>
                       </template>
                     </v-data-table>
@@ -656,13 +669,14 @@
                     label="Observações Gerais"
                     :error-messages="observacaoGeralErros"
                     :counter="250"
+                    :readonly="modoVisualizacao"
                     @change="$v.observacaoGeral.$touch()"
                     @blur="$v.observacaoGeral.$touch()"
                   ></v-textarea>
                 </v-col>
               </v-row>
 
-              <v-btn class="mr-4 mt-2" color="success" @click="registrar">Registrar</v-btn>
+              <v-btn class="mr-4 mt-2" color="success" @click="registrar" v-if="!modoVisualizacao">Registrar</v-btn>
             </v-form>
           </v-container>
         </v-card>
@@ -714,6 +728,7 @@ export default {
 
   data: () => ({
     idPaciente: 0,
+    idAtendimento: 0,
     email: '',
     select: null,
     checkbox: false,
@@ -803,19 +818,23 @@ export default {
     itensTosse: [{text: 'Ausente', value: 'ausente'}, {text: 'Consegue Falar Sem Tossir', value: 'fala_sem_tossir'}, {text: 'Não Completa uma Frase Sem Tossir', value: 'fala_tossindo'}],
     itensFaltaArCansaco: [{text: 'Ausente', value: 'ausente'}, {text: 'Presente ao Esforço', value: 'presente_ao_esforco'}, {text: 'Intensa no Repouso', value: 'intensa_no_repouso'}],
     itensSituacaoFamiliar: [{text: 'Sintomático', value: 'sintomatico'}, {text: 'Assintomático', value: 'assintomatico'}],
-    itensExameFamiliar: [{text: 'Positivo', value: 'positivo'}, {text: 'Negativo', value: 'negativo'}, {text: 'Aguardando Resultado', value: 'aguardando_resultado'}]
+    itensExameFamiliar: [{text: 'Positivo', value: 'positivo'}, {text: 'Negativo', value: 'negativo'}, {text: 'Aguardando Resultado', value: 'aguardando_resultado'}],
+    modoVisualizacao: false
   }),
 
-  mounted() {
-    // if(this.$route.params.paciente > 0)
-    // {
-    //   this.carregaPaciente(this.$route.params.paciente);
-    // }
+  async mounted() {
+    this.idAtendimento = this.$route.params.id;
 
-    this.carregaUnidadesReferencia();
-    this.carregaUnidadesSintomaticas();
-    this.carregaComorbidades();
-    this.carregaSinais();
+    if(this.idAtendimento > 0)
+    {
+      this.modoVisualizacao = true;
+      this.carregaAtendimento();
+    }
+
+    await this.carregaUnidadesReferencia();
+    await this.carregaUnidadesSintomaticas();
+    await this.carregaComorbidades();
+    await this.carregaSinais();
   },
 
   computed: {
@@ -983,14 +1002,68 @@ export default {
     },
 
     methods: {
+      setAtendimento(atendimento){
+        this.idPaciente = atendimento.paciente_id;
+        this.dataLigacao = this.moment(atendimento.data_hora_ligacao).format('DD/MM/YYYY');
+        this.horaLigacao = atendimento.data_hora_ligacao.split(' ')[1];
+        this.emIsolamento = atendimento.isolamento;
+        this.orientacao = atendimento.orientacao;
+        this.conduta = atendimento.orientacao_conduta;
+        this.apetite = atendimento.apetite;
+        this.febre = atendimento.febre;
+        this.tosse = atendimento.tosse;
+        this.faltaArCansaco = atendimento.falta_de_ar;
+        this.observacaoGeral = atendimento.observacoes_gerais;
+      },
+
+      setPaciente(paciente){
+        this.cep = paciente.cep;
+        this.cidade = paciente.cidade;
+        this.uf = paciente.estado;
+        this.bairro = paciente.bairro;
+        this.logradouro = paciente.logradouro;
+        this.nome = paciente.nome;
+        this.numero = paciente.numero;
+        this.telefone = paciente.telefone;
+        this.cns = paciente.cns;
+        this.dataNascimento = paciente.data_nasc;
+        this.dataObito = paciente.obito;
+        this.dataPrimeiraAvaliacaoMedica= paciente.primeira_avaliacao_medica;
+        this.dataInicioSintomas = paciente.data_inicio_sintomas;
+        this.dataColetaExame = paciente.data_coleta_exames;
+        this.local = paciente.unidade_sintomatica_id;
+        this.tipoConvenio = paciente.convenio;
+        this.unidadeReferencia = paciente.unidade_saude_id;
+        this.tipoExame = paciente.tipo_exame;
+        this.dataResultado = paciente.data_resultado;
+        this.resultadoExame = paciente.resultado_exame;
+        this.grupoRisco = paciente.grupo_risco;
+        // this.familiares = 
+        // this.comorbidades = 
+        // this.sinais = 
+      },
+
+      async carregaAtendimento(){
+        await this.axios.get('/atendimentos/' + this.idAtendimento)
+        .then((response) => {
+          this.setAtendimento(response.data);
+          
+          this.carregaPaciente();
+        })
+        .catch((error) => {
+          console.log(error);
+        })
+      },
+
       cliqueOK(){
         this.dialogConduta = false;
         this.$router.push('/home');
       },
-      async carregaPaciente(idPaciente){
-        await this.axios.get('/paciente', { params: { id_paciente: idPaciente}})
+
+      async carregaPaciente(){
+        await this.axios.get('/pacientes/' + this.idPaciente)
         .then((response) => {
-          this.unidadesReferencia = response.data;
+          this.setPaciente(response.data);
         })
         .catch((error) => {
           console.log(error);
