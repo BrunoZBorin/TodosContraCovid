@@ -132,8 +132,8 @@ export default {
     }
   },
 
-  async mounted() {
-    await this.buscarUnidadesSaude();
+  mounted() {
+    this.buscarUnidadesSaude();
 
     if(this.$route.params.id > 0) this.findById(this.$route.params.id);
   },
