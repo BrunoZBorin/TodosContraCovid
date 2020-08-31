@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Comorbidades;
+use App\PacienteComorbidades;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -28,7 +29,11 @@ class ComorbidadesController extends Controller
     public function store(Request $request)
     {
         $comorbidades = Comorbidades::create($request->all());
-        return response()->json($comorbidades, 201);
+        $paciente_comorbidades = new PacienteComorbidades();
+        $paciente_comorbidades->paciente_id = $request->paciente_id;
+        $paciente_comorbidades->comorbidades_id = $comorbidades->id;
+        $paciente_comorbidades->save();
+        return response()->json([$comorbidades, $paciente_comorbidades], 201);
     }
 
     /**

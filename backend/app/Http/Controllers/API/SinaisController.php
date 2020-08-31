@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Sinais;
+use App\AtendimentoSinais;
 use App\Http\Requests\SinaisFormRequest;
 
 class SinaisController extends Controller
@@ -29,7 +30,12 @@ class SinaisController extends Controller
     public function store(SinaisFormRequest $request)
     {
         $sinais = Sinais::create($request->all());
-        return response()->json($sinais, 201);
+        $atendimento_sinais = new AtendimentoSinais();
+        $atendimento_sinais->sinais_id = $sinais->id;
+        $atendimento_sinais->atendimento_id = $request->atendimento_id;
+        $atendimento_sinais->save();
+
+        return response()->json([$sinais, $atendimento_sinais ], 201);
     }
 
     /**

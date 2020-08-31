@@ -7,13 +7,23 @@ use App\AtendimentoSinais;
 use App\Familiar;
 use App\Http\Controllers\Controller;
 use App\Paciente;
+use App\Sinais;
+use Illuminate\Support\Facades\DB;
 use App\PacienteComorbidades;
 use Illuminate\Http\Request;
 use App\Http\Requests\PacienteFormRequest;
 use Carbon\Carbon;
+use App\Exports\PacientesExport;
+use Maatwebsite\Excel\Excel;
+
 
 class PacienteController extends Controller
 {
+    private $excel;
+
+    public function __construct(Excel $excel){
+        $this->excel = $excel;
+    }
     /**
      * Display a listing of the resource.
      *
@@ -61,6 +71,38 @@ class PacienteController extends Controller
     {
         $paciente = Paciente::findOrFail($id);
         return response()->json($paciente, 200);
+    }
+
+    public function show_sinais_familiares($id)
+    {
+        $paciente = Paciente::findOrFail($id);
+        $familiares = Familiar::all();
+        $familiars = [];
+        
+        $atendimentos = DB::table('atendimentos')
+            ->where('paciente_id',$id)
+            ->get();
+        
+        $sinais = [];
+        foreach($atendimentos as $atendimento){
+            $sinais[] = DB::table('sinais')
+            ->join('atendimento_sinais','sinais.id','=','atendimento_sinais.sinais_id')
+            ->where('atendimento_sinais.atendimento_id',$atendimento->id)
+            ->get();
+        }
+
+        $comorbidades = DB::table('comorbidades')
+        ->join('paciente_comorbidades','comorbidades.id','=','paciente_comorbidades.comorbidades_id')
+        ->where('paciente_comorbidades.paciente_id',$id)
+        ->get();
+        
+        foreach($familiares as $familiar){
+            if($familiar->paciente_id == $id)
+            {
+                $familiars[] = $familiar;
+            }
+        }
+        return response()->json([$paciente, $familiars, $atendimentos, $sinais, $comorbidades], 200);
     }
 
     /**
@@ -232,5 +274,15 @@ class PacienteController extends Controller
     {
         $endereco = \Correios::cep($request->cep);
         return response()->json($endereco, 200);
+    }
+
+    public function export_excel() 
+    {
+        return $this->excel->download(new PacientesExport, 'Pacientes.xlsx');
+    }
+
+    public function export_pdf() 
+    {
+        return $this->excel->download(new PacientesExport, 'Pacientes.pdf', Excel::DOMPDF);
     }
 }

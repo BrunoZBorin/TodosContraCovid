@@ -20,7 +20,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::apiResources([
     'unidades_saude' => 'API\UnidadeSaudeController',
     'unidades_sintomaticas' => 'API\UnidadeSintomaticaController',
-    'usuarios' => 'API\UsuarioController',
     'sinais' => 'API\SinaisController',
     'atendimentos' => 'API\AtendimentoController',
     'pacientes' => 'API\PacienteController',
@@ -32,3 +31,8 @@ Route::post('/primeiro_cadastro', 'API\PacienteController@primeiro_cadastro');
 Route::get('/cep', 'API\PacienteController@cep');
 Route::post('/register', 'API\AuthController@register');
 Route::post('/login', 'API\AuthController@login');
+Route::get('/pacientes_export_excel', 'API\PacienteController@export_excel');
+Route::get('/pacientes_export_pdf', 'API\PacienteController@export_pdf');
+Route::get('/atendimentos_export_excel', 'API\AtendimentoController@export_excel');
+Route::get('/atendimentos_export_pdf', 'API\AtendimentoController@export_pdf');
+Route::get('/show_sinais_familiares/{id}', 'API\PacienteController@show_sinais_familiares');
