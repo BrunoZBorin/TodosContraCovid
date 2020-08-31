@@ -17,7 +17,13 @@ export default {
   },
 
   mounted() {
-    this.$router.push("login");
+    this.$router.push("/inicio");
   }
 };
 </script>
+
+<style>
+  .theme--light.v-application {
+    background: #eef8fd !important;
+  }
+</style>

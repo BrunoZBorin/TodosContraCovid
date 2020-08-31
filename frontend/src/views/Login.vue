@@ -7,7 +7,7 @@
 		<v-container class="fill-height" fluid>
 			<v-row justify="center">
 				<v-col cols="12" sm="8" md="4">
-					<v-card outlined style="border: none; background-color: transparent;">
+					<v-card outlined elevation="15">
 						<v-card-title style="margin-bottom: 10px;">
 							<img src="../assets/antcovid.png" alt="Todos Contra Covid!" width="200" class="mx-auto">
 						</v-card-title>
@@ -15,23 +15,23 @@
 							<v-form ref="form" v-model="valid" lazy-validation>
 								<v-text-field label="E-mail" name="email" type="email" autocomplete="email"
 									v-model="email" required :rules="EmailRules" v-on:keyup.enter="validate"
-									outlined rounded>
+									outlined>
 									<template v-slot:append>
 										<v-fade-transition leave-absolute>
-											<v-icon>person</v-icon>
+											<v-icon color="teal">person</v-icon>
 										</v-fade-transition>
 									</template>
 								</v-text-field>
 								<v-text-field id="password" label="Senha" name="password" type="password"
 									autocomplete="current-password" v-model="password" required :rules="passwordRules"
-									v-on:keyup.enter="validate" outlined rounded>
+									v-on:keyup.enter="validate" outlined>
 									<template v-slot:append>
 										<v-fade-transition leave-absolute>
-											<v-icon>lock</v-icon>
+											<v-icon color="teal">lock</v-icon>
 										</v-fade-transition>
 									</template>
 								</v-text-field>
-								<v-btn color="primary" v-on:click="validate" v-on:keyup.enter="validate" rounded block>Acessar</v-btn>
+								<v-btn elevation="5" color="teal" v-on:click="validate" v-on:keyup.enter="validate" block>Acessar</v-btn>
 								<v-spacer />
 							</v-form>
 						</v-card-text>
@@ -77,3 +77,15 @@
 		}
 	}
 </script>
+
+<style scoped>
+	.v-card {
+		border: 1px solid rgb(64 141 150);
+		border-radius: 5px;
+		padding: 20px;
+	}
+
+	.theme--light.v-btn {
+		color: white;
+	}
+</style>
