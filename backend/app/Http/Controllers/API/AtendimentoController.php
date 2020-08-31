@@ -3,14 +3,24 @@
 namespace App\Http\Controllers\API;
 
 use App\Atendimento;
+use App\AtendimentoSinais;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\AtendimentoFormRequest;
 use App\Paciente;
 use Carbon\Carbon;
+use App\Exports\AtendimentosExport;
+use Maatwebsite\Excel\Excel;
+
 
 class AtendimentoController extends Controller
 {
+    private $excel;
+
+    public function __construct(Excel $excel){
+        $this->excel = $excel;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -86,7 +96,7 @@ class AtendimentoController extends Controller
         if($pontos>=10){
             $atendimento->orientacao_conduta = 'encaminhar_SAMU';
         }
-
+        
         return response()->json($atendimento, 201);
     }
 
@@ -129,5 +139,14 @@ class AtendimentoController extends Controller
         $atendimento = Atendimento::findOrFail($id);
         $atendimento->delete();
         return response()->json([], 200);
+    }
+
+    public function export_excel() 
+    {
+        return $this->excel->download(new AtendimentosExport, 'atendimentos.xlsx');
+    }
+    public function export_pdf() 
+    {
+        return $this->excel->download(new AtendimentosExport, 'atendimentos.pdf', Excel::DOMPDF);
     }
 }

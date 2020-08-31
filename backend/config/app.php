@@ -162,6 +162,7 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
         'Cagartner\CorreiosConsulta\ServiceProvider',
+        Maatwebsite\Excel\ExcelServiceProvider::class,
 
         /*
          * Package Service Providers...
@@ -228,6 +229,7 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'Correios'    => 'Cagartner\CorreiosConsulta\Facade',
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
 
     ],
 
