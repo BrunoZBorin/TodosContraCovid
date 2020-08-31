@@ -66,25 +66,63 @@
     },
 
     mounted() {
-      this.getUsuarios();
+      this.load();
     },
 
     methods: {
-      async getUsuarios() {
+      async load() {
         this.loading = true;
 
-        const response = await this.axios.get('unidades_saude');
+        const response = await this.axios.get('unidades_saude')
+        .catch(err => {
+          console.log(err);
+          this.$swal(
+            'Erro',
+            'Ocorreu um problema inesperado!',
+            'error'
+          );
+        });
+        
         this.loading = false;
-
         this.items = response.data;
       },
 
       editItem(item) {
-        
+        this.$router.push(`/unidades_saude/cadastro/${item.id}`)
       },
 
-      deleteItem(item) {
+      async deleteItem(item) {
+        const result = await this.$swal({
+          title: 'Tem ceteza que deseja continuar?',
+          text: "Você não poderá reverter isso!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Sim',
+          cancelButtonText: 'Não'
+        });
 
+        if (!result.value) return;
+
+        this.axios.delete(`unidades_saude/${item.id}`)
+        .then(() => {
+          this.$swal(
+            'Deletado!',
+            'Operação realizada com sucesso!',
+            'success'
+          );
+
+          this.load();
+        })
+        .catch(err => {
+          console.log(err);
+          this.$swal(
+            'Erro',
+            'Ocorreu um problema inesperado!',
+            'error'
+          );
+        });
       }
     }
   }

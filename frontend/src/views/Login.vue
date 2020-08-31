@@ -4,13 +4,12 @@
 			{{ snackText }}
 			<v-btn text @click="snack = false">Fechar</v-btn>
 		</v-snackbar>
-		<loading :active.sync="isLoading" loader="Bars"></loading>
 		<v-container class="fill-height" fluid>
-			<v-row align="center" justify="center">
+			<v-row justify="center">
 				<v-col cols="12" sm="8" md="4">
 					<v-card outlined style="border: none; background-color: transparent;">
-						<v-card-title style="margin-bottom: 40px;">
-							Foto
+						<v-card-title style="margin-bottom: 10px;">
+							<img src="../assets/antcovid.png" alt="Todos Contra Covid!" width="200" class="mx-auto">
 						</v-card-title>
 						<v-card-text>
 							<v-form ref="form" v-model="valid" lazy-validation>
@@ -44,15 +43,9 @@
 </template>
 
 <script>
-	import Loading from 'vue-loading-overlay';
-	import 'vue-loading-overlay/dist/vue-loading.css';
 	export default {
-		components: {
-			Loading
-		},
 		data() {
 			return {
-				isLoading: false,
 				snack: false,
 				snackColor: '',
 				snackText: '',
@@ -76,14 +69,10 @@
 				}
 			},
 			async logar() {
-				this.isLoading = true;
-
 				await this.$store
 				.dispatch('login', { email: this.email, password: this.password })
 				.then(() => this.$router.push('home'))
 				.catch(error => this.stop());
-
-				this.isLoading = false;
 			}
 		}
 	}

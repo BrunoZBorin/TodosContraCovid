@@ -104,10 +104,10 @@
                 <v-list-item-title>Unidades Sintomática</v-list-item-title>
               </v-list-item>
             </template>
-            <v-list-item to="/unidades_sintomatica/listagem">
+            <v-list-item to="/unidades_sintomaticas/listagem">
               <v-list-item-title>Listagem</v-list-item-title>
             </v-list-item>
-            <v-list-item to="/unidades_sintomatica/cadastro/0">
+            <v-list-item to="/unidades_sintomaticas/cadastro/0">
               <v-list-item-title>Cadastro</v-list-item-title>
             </v-list-item>
           </v-list-group>
