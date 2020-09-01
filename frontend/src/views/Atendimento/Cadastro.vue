@@ -29,7 +29,7 @@
           </v-row>
         </template>
         <v-card>
-          <v-card-title class="headline">Atendimento</v-card-title>
+          <v-card-title class="headline">Cadastro de Atendimento</v-card-title>
           <v-container>
             <v-form>
               <v-row>
@@ -42,6 +42,7 @@
                     :readonly="modoVisualizacao"
                     @input="$v.nome.$touch()"
                     @blur="$v.nome.$touch()"
+                    dense
                   ></v-text-field>
                 </v-col>
                 <v-col cols="4">
@@ -55,7 +56,20 @@
                   >
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field
-                        v-model="dataNascimentoFormatada"
+                        v-model="computedDataNascimentoFormatada"
+                        :error-messages="dataNascimentoErros"
+                        label="Data de Nascimento"
+                        prepend-icon="event"
+                        readonly
+                        v-bind="attrs"
+                        required
+                        @input="$v.dataNascimento.$touch()"
+                        @blur="$v.dataNascimento.$touch()"
+                        dense
+                        v-if="modoVisualizacao"
+                      ></v-text-field>
+                      <v-text-field
+                        v-model="computedDataNascimentoFormatada"
                         :error-messages="dataNascimentoErros"
                         label="Data de Nascimento"
                         prepend-icon="event"
@@ -64,7 +78,9 @@
                         v-on="on"
                         required
                         @input="$v.dataNascimento.$touch()"
-                        @blur="$v.dataNascimento.$touch(), dataNascimento = parseDate(dataNascimentoFormatada)"
+                        @blur="$v.dataNascimento.$touch()"
+                        dense
+                        v-else
                       ></v-text-field>
                     </template>
                     <v-date-picker
@@ -86,6 +102,7 @@
                     :readonly="modoVisualizacao"
                     @input="$v.cns.$touch()"
                     @blur="$v.cns.$touch()"
+                    dense
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -101,6 +118,7 @@
                     :readonly="modoVisualizacao"
                     @input="$v.cep.$touch()"
                     @blur="$v.cep.$touch(), buscaEndereco()"
+                    dense
                   ></v-text-field>
                 </v-col>
                 <v-col cols="4">
@@ -113,6 +131,7 @@
                     required
                     @input="$v.cns.$touch()"
                     @blur="$v.cns.$touch()"
+                    dense
                   ></v-text-field>
                 </v-col>
                 <v-col cols="1">
@@ -125,6 +144,7 @@
                     required
                     @input="$v.cns.$touch()"
                     @blur="$v.cns.$touch()"
+                    dense
                   ></v-text-field>
                 </v-col>
                 <v-col cols="4">
@@ -137,6 +157,7 @@
                     required
                     @input="$v.cns.$touch()"
                     @blur="$v.cns.$touch()"
+                    dense
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -151,6 +172,7 @@
                     required
                     @input="$v.cns.$touch()"
                     @blur="$v.cns.$touch()"
+                    dense
                   ></v-text-field>
                 </v-col>
                 <v-col cols="3">
@@ -163,6 +185,7 @@
                     :readonly="modoVisualizacao"
                     @input="$v.numero.$touch()"
                     @blur="$v.numero.$touch()"
+                    dense
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -178,7 +201,21 @@
                   >
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field
-                        v-model="dataPrimeiraAvaliacaoMedicaFormatada"
+                        v-model="computedDataPrimeiraAvaliacaoMedicaFormatada"
+                        label="Primeira Avaliação Médica"
+                        prepend-icon="event"
+                        readonly
+                        :error-messages="dataPrimeiraAvaliacaoMedicaErros"
+                        v-bind="attrs"
+                        required
+                        @input="$v.dataPrimeiraAvaliacaoMedica.$touch()"
+                        @blur="$v.dataPrimeiraAvaliacaoMedica.$touch()"
+                        dense
+                        v-if="modoVisualizacao"
+                      ></v-text-field>
+
+                      <v-text-field
+                        v-model="computedDataPrimeiraAvaliacaoMedicaFormatada"
                         label="Primeira Avaliação Médica"
                         prepend-icon="event"
                         readonly
@@ -187,12 +224,15 @@
                         v-on="on"
                         required
                         @input="$v.dataPrimeiraAvaliacaoMedica.$touch()"
-                        @blur="$v.dataPrimeiraAvaliacaoMedica.$touch(), dataPrimeiraAvaliacaoMedica = parseDate(dataPrimeiraAvaliacaoMedicaFormatada)"
+                        @blur="$v.dataPrimeiraAvaliacaoMedica.$touch()"
+                        dense
+                        v-else
                       ></v-text-field>
                     </template>
                     <v-date-picker
                       ref="picker"
                       v-model="dataPrimeiraAvaliacaoMedica"
+                      :title-date-format="formataData"
                       :max="new Date().toISOString().substr(0, 10)"
                       min="1950-01-01"
                     ></v-date-picker>
@@ -208,6 +248,7 @@
                     :readonly="modoVisualizacao"
                     @input="$v.telefone.$touch()"
                     @blur="$v.telefone.$touch()"
+                    dense
                   ></v-text-field>
                 </v-col>
                 <v-col cols="4">
@@ -221,18 +262,30 @@
                   >
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field
-                        v-model="dataObitoFormatada"
+                        v-model="computedDataObitoFormatada"
+                        label="Óbito"
+                        prepend-icon="event"
+                        readonly
+                        v-bind="attrs"
+                        dense
+                        v-if="modoVisualizacao"
+                      ></v-text-field>
+
+                      <v-text-field
+                        v-model="computedDataObitoFormatada"
                         label="Óbito"
                         prepend-icon="event"
                         readonly
                         v-bind="attrs"
                         v-on="on"
-                        @blur="dataObito = parseDate(dataObitoFormatada)"
+                        dense
+                        v-else
                       ></v-text-field>
                     </template>
                     <v-date-picker
                       ref="picker"
                       v-model="dataObito"
+                      :title-date-format="formataData"
                       :max="new Date().toISOString().substr(0, 10)"
                       min="1950-01-01"
                     ></v-date-picker>
@@ -251,7 +304,21 @@
                   >
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field
-                        v-model="dataInicioSintomasFormatada"
+                        v-model="computedDataInicioSintomasFormatada"
+                        label="Data de Início dos Sintomas"
+                        prepend-icon="event"
+                        readonly
+                        :error-messages="dataInicioSintomasErros"
+                        v-bind="attrs"
+                        required
+                        @input="$v.dataInicioSintomas.$touch()"
+                        @blur="$v.dataInicioSintomas.$touch()"
+                        dense
+                        v-if="modoVisualizacao"
+                      ></v-text-field>
+
+                      <v-text-field
+                        v-model="computedDataInicioSintomasFormatada"
                         label="Data de Início dos Sintomas"
                         prepend-icon="event"
                         readonly
@@ -260,12 +327,15 @@
                         v-on="on"
                         required
                         @input="$v.dataInicioSintomas.$touch()"
-                        @blur="$v.dataInicioSintomas.$touch(), dataInicioSintomas = parseDate(dataInicioSintomasFormatada)"
+                        @blur="$v.dataInicioSintomas.$touch()"
+                        dense
+                        v-else
                       ></v-text-field>
                     </template>
                     <v-date-picker
                       ref="picker"
                       v-model="dataInicioSintomas"
+                      :title-date-format="formataData"
                       :max="new Date().toISOString().substr(0, 10)"
                       min="1950-01-01"
                     ></v-date-picker>
@@ -282,7 +352,21 @@
                   >
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field
-                        v-model="dataColetaExameFormatada"
+                        v-model="computedDataColetaExameFormatada"
+                        label="Data da Coleta do Exame"
+                        prepend-icon="event"
+                        readonly
+                        :error-messages="dataColetaExameErros"
+                        v-bind="attrs"
+                        required
+                        @input="$v.dataColetaExame.$touch()"
+                        @blur="$v.dataColetaExame.$touch()"
+                        dense
+                        v-if="modoVisualizacao"
+                      ></v-text-field>
+
+                      <v-text-field
+                        v-model="computedDataColetaExameFormatada"
                         label="Data da Coleta do Exame"
                         prepend-icon="event"
                         readonly
@@ -291,13 +375,15 @@
                         v-on="on"
                         required
                         @input="$v.dataColetaExame.$touch()"
-                        @blur="$v.dataColetaExame.$touch(), dataColetaExame = parseDate(dataColetaExameFormatada)"
+                        @blur="$v.dataColetaExame.$touch()"
+                        dense
+                        v-else
                       ></v-text-field>
                     </template>
                     <v-date-picker
                       ref="picker"
                       v-model="dataColetaExame"
-                      :max="new Date().toISOString().substr(0, 10)"
+                      :title-date-format="formataData"
                       min="1950-01-01"
                     ></v-date-picker>
                   </v-menu>
@@ -311,19 +397,20 @@
                     offset-y
                     min-width="290px"
                   >
-                    <template v-slot:activator="{ on, attrs }">
+                    <template v-slot:activator="{ attrs }">
                       <v-text-field
                         v-model="dataFimIsolamentoFormatada"
                         label="Isolamento até"
                         prepend-icon="event"
                         readonly
                         v-bind="attrs"
-                        @blur="dataFimIsolamento = parseDate(dataFimIsolamentoFormatada)"
+                        dense
                       ></v-text-field>
                     </template>
                     <v-date-picker
                       ref="picker"
                       v-model="dataFimIsolamento"
+                      :title-date-format="formataData"
                       :max="new Date().toISOString().substr(0, 10)"
                       min="1950-01-01"
                     ></v-date-picker>
@@ -343,6 +430,7 @@
                     :readonly="modoVisualizacao"
                     @change="$v.local.$touch()"
                     @blur="$v.local.$touch()"
+                    dense
                   ></v-select>
                 </v-col>
                 <v-col cols="4">
@@ -355,6 +443,7 @@
                     :readonly="modoVisualizacao"
                     @change="$v.tipoConvenio.$touch()"
                     @blur="$v.tipoConvenio.$touch()"
+                    dense
                   ></v-select>
                 </v-col>
                 <v-col cols="4">
@@ -369,6 +458,7 @@
                     :readonly="modoVisualizacao"
                     @change="$v.unidadeReferencia.$touch()"
                     @blur="$v.unidadeReferencia.$touch()"
+                    dense
                   ></v-select>
                 </v-col>
               </v-row>
@@ -383,6 +473,7 @@
                     :readonly="modoVisualizacao"
                     @change="$v.tipoExame.$touch()"
                     @blur="$v.tipoExame.$touch()"
+                    dense
                   ></v-select>
                 </v-col>
                 <v-col cols="4">
@@ -396,19 +487,30 @@
                   >
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field
-                        v-model="dataResultadoFormatada"
+                        v-model="computedDataResultadoFormatada"
+                        label="Data do Resultado"
+                        prepend-icon="event"
+                        readonly
+                        v-bind="attrs"
+                        dense
+                        v-if="modoVisualizacao"
+                      ></v-text-field>
+
+                      <v-text-field
+                        v-model="computedDataResultadoFormatada"
                         label="Data do Resultado"
                         prepend-icon="event"
                         readonly
                         v-bind="attrs"
                         v-on="on"
-                        @blur="dataResultado = parseDate(dataResultadoFormatada)"
+                        dense
+                        v-else
                       ></v-text-field>
                     </template>
                     <v-date-picker
                       ref="picker"
                       v-model="dataResultado"
-                      :max="new Date().toISOString().substr(0, 10)"
+                      :title-date-format="formataData"
                       min="1950-01-01"
                     ></v-date-picker>
                   </v-menu>
@@ -423,6 +525,7 @@
                     :readonly="modoVisualizacao"
                     @change="$v.resultadoExame.$touch()"
                     @blur="$v.resultadoExame.$touch()"
+                    dense
                   ></v-select>
                 </v-col>
               </v-row>
@@ -437,29 +540,32 @@
                     :readonly="modoVisualizacao"
                     @change="$v.grupoRisco.$touch()"
                     @blur="$v.grupoRisco.$touch()"
+                    dense
                   ></v-select>
                 </v-col>
                 <v-col cols="4">
                   <v-menu>
-                    <template v-slot:activator="{ on, attrs }">
+                    <template v-slot:activator="{ attrs }">
                       <v-text-field
                         v-model="dataLigacao"
                         label="Data da Ligação"
                         prepend-icon="event"
                         readonly
                         v-bind="attrs"
+                        dense
                       ></v-text-field>
                     </template>
                   </v-menu>
                 </v-col>
                 <v-col cols="4">
                   <v-menu>
-                    <template v-slot:activator="{ on, attrs }">
+                    <template v-slot:activator="{ attrs }">
                       <v-text-field
                         v-model="horaLigacao"
                         label="Hora da Ligação"
                         readonly
                         v-bind="attrs"
+                        dense
                       ></v-text-field>
                     </template>
                   </v-menu>
@@ -472,8 +578,10 @@
                     :items="comorbidades"
                     label="Comorbidades"
                     item-text="nome"
-                    multiple
+                    item-value="id"
                     :readonly="modoVisualizacao"
+                    multiple
+                    dense
                   ></v-select>
                 </v-col>
               </v-row>
@@ -488,6 +596,7 @@
                     :readonly="modoVisualizacao"
                     @change="$v.emIsolamento.$touch()"
                     @blur="$v.emIsolamento.$touch()"
+                    dense
                   ></v-select>
                 </v-col>
                 <v-col cols="4">
@@ -500,6 +609,7 @@
                     :readonly="modoVisualizacao"
                     @change="$v.orientacao.$touch()"
                     @blur="$v.orientacao.$touch()"
+                    dense
                   ></v-select>
                 </v-col>
                 <v-col cols="4">
@@ -512,6 +622,7 @@
                     :readonly="modoVisualizacao"
                     @change="$v.apetite.$touch()"
                     @blur="$v.apetite.$touch()"
+                    dense
                   ></v-select>
                 </v-col>
               </v-row>
@@ -522,8 +633,10 @@
                     :items="sinais"
                     label="Sinais"
                     item-text="nome"
-                    multiple
+                    item-value="id"
                     :readonly="modoVisualizacao"
+                    multiple
+                    dense
                   ></v-select>
                 </v-col>
               </v-row>
@@ -538,6 +651,7 @@
                     :readonly="modoVisualizacao"
                     @change="$v.febre.$touch()"
                     @blur="$v.febre.$touch()"
+                    dense
                   ></v-select>
                 </v-col>
                 <v-col cols="4">
@@ -550,6 +664,7 @@
                     :readonly="modoVisualizacao"
                     @change="$v.tosse.$touch()"
                     @blur="$v.tosse.$touch()"
+                    dense
                   ></v-select>
                 </v-col>
                 <v-col cols="4">
@@ -562,6 +677,7 @@
                     :readonly="modoVisualizacao"
                     @change="$v.faltaArCansaco.$touch()"
                     @blur="$v.faltaArCansaco.$touch()"
+                    dense
                   ></v-select>
                 </v-col>
               </v-row>
@@ -672,6 +788,17 @@
                     :readonly="modoVisualizacao"
                     @change="$v.observacaoGeral.$touch()"
                     @blur="$v.observacaoGeral.$touch()"
+                    dense
+                  ></v-textarea>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12" v-if="modoVisualizacao">
+                  <v-textarea
+                    v-model="conduta"
+                    label="Orientação / Conduta"
+                    :readonly="modoVisualizacao"
+                    dense
                   ></v-textarea>
                 </v-col>
               </v-row>
@@ -824,11 +951,16 @@ export default {
 
   async mounted() {
     this.idAtendimento = this.$route.params.id;
+    this.idPaciente = this.$route.params.paciente_id;
 
     if(this.idAtendimento > 0)
     {
       this.modoVisualizacao = true;
       this.carregaAtendimento();
+    }
+    else if(this.idPaciente > 0)
+    {
+      console.log(this.idPaciente);
     }
 
     await this.carregaUnidadesReferencia();
@@ -844,18 +976,21 @@ export default {
         !this.$v.nome.required && errors.push('O nome é necessário.')
         return errors
       },
+
       dataNascimentoErros () {
         const errors = []
         if (!this.$v.dataNascimento.$dirty) return errors
         !this.$v.dataNascimento.required && errors.push('A data de nascimento é necessária.')
         return errors
       },
+
       cnsErros () {
         const errors = []
         if (!this.$v.cns.$dirty) return errors
         !this.$v.cns.required && errors.push('O CNS é necessário.')
         return errors
       },
+
       cepErros () {
         const errors = []
         if (!this.$v.cep.$dirty) return errors
@@ -864,187 +999,259 @@ export default {
         !this.$v.cep.required && errors.push('O CEP é necessário.')
         return errors
       },
+
       cidadeErros () {
         const errors = []
         if (!this.$v.cidade.$dirty) return errors
         !this.$v.cidade.required && errors.push('O nome da cidade é necessário.')
         return errors
       },
+
       ufErros () {
         const errors = []
         if (!this.$v.uf.$dirty) return errors
         !this.$v.uf.required && errors.push('O nome do estado é necessário.')
         return errors
       },
+
       bairroErros () {
         const errors = []
         if (!this.$v.bairro.$dirty) return errors
         !this.$v.bairro.required && errors.push('O bairro é necessário.')
         return errors
       },
+
       logradouroErros () {
         const errors = []
         if (!this.$v.logradouro.$dirty) return errors
         !this.$v.logradouro.required && errors.push('O logradouro é necessário.')
         return errors
       },
+
       numeroErros () {
         const errors = []
         if (!this.$v.numero.$dirty) return errors
         !this.$v.numero.required && errors.push('O numero é necessário.')
         return errors
       },
+
       dataPrimeiraAvaliacaoMedicaErros () {
         const errors = []
         if (!this.$v.dataPrimeiraAvaliacaoMedica.$dirty) return errors
         !this.$v.dataPrimeiraAvaliacaoMedica.required && errors.push('A data da primeira avaliação médica é necessária.')
         return errors
       },
+
       telefoneErros () {
         const errors = []
         if (!this.$v.telefone.$dirty) return errors
         !this.$v.telefone.required && errors.push('O telefone é necessário.')
         return errors
       },
+
       dataInicioSintomasErros () {
         const errors = []
         if (!this.$v.dataInicioSintomas.$dirty) return errors
         !this.$v.dataInicioSintomas.required && errors.push('A data de início dos sintomas é necessária.')
         return errors
       },
+
       dataColetaExameErros () {
         const errors = []
         if (!this.$v.dataColetaExame.$dirty) return errors
         !this.$v.dataColetaExame.required && errors.push('A data de coleta do exame é necessária.')
         return errors
       },
+
       localErros () {
         const errors = []
         if (!this.$v.local.$dirty) return errors
         !this.$v.local.required && errors.push('O local é necessário.')
         return errors
       },
+
       tipoConvenioErros () {
         const errors = []
         if (!this.$v.tipoConvenio.$dirty) return errors
         !this.$v.tipoConvenio.required && errors.push('O tipo de convênio é necessário.')
         return errors
       },
+
       unidadeReferenciaErros () {
         const errors = []
         if (!this.$v.unidadeReferencia.$dirty) return errors
         !this.$v.unidadeReferencia.required && errors.push('A unidade de referência é necessária.')
         return errors
       },
+
       tipoExameErros () {
         const errors = []
         if (!this.$v.tipoExame.$dirty) return errors
         !this.$v.tipoExame.required && errors.push('O tipo de exame é necessário.')
         return errors
       },
+      
       resultadoExameErros () {
         const errors = []
         if (!this.$v.resultadoExame.$dirty) return errors
         !this.$v.resultadoExame.required && errors.push('O resultado do exame é necessário.')
         return errors
       },
+
       grupoRiscoErros () {
         const errors = []
         if (!this.$v.grupoRisco.$dirty) return errors
         !this.$v.grupoRisco.required && errors.push('O grupo de risco é necessário.')
         return errors
       },
+
       emIsolamentoErros () {
         const errors = []
         if (!this.$v.emIsolamento.$dirty) return errors
         !this.$v.emIsolamento.required && errors.push('A situação de isolamento é necessária.')
         return errors
       },
+
       orientacaoErros () {
         const errors = []
         if (!this.$v.orientacao.$dirty) return errors
         !this.$v.orientacao.required && errors.push('A situação de orientação é necessária.')
         return errors
       },
+
       apetiteErros () {
         const errors = []
         if (!this.$v.apetite.$dirty) return errors
         !this.$v.apetite.required && errors.push('A situação do apetite é necessária.')
         return errors
       },
+
       febreErros () {
         const errors = []
         if (!this.$v.febre.$dirty) return errors
         !this.$v.febre.required && errors.push('A situação de febre é necessária.')
         return errors
       },
+
       tosseErros () {
         const errors = []
         if (!this.$v.tosse.$dirty) return errors
         !this.$v.tosse.required && errors.push('A situação de tosse é necessária.')
         return errors
       },
+
       faltaArCansacoErros () {
         const errors = []
         if (!this.$v.faltaArCansaco.$dirty) return errors
         !this.$v.faltaArCansaco.required && errors.push('A situação da falta de ar ou cansaço é necessária.')
         return errors
       },
+
       formTitle () {
         return this.editedIndex === -1 ? 'Novo Familiar' : 'Editar Familiar'
       },
+
       observacaoGeralErros () {
         const errors = []
         if (!this.$v.observacaoGeral.$dirty) return errors
         !this.$v.observacaoGeral.maxLength && errors.push('Informe no máximo 250 caracteres.')
         return errors
       },
+
+      computedDataNascimentoFormatada () {
+        return this.formataData(this.dataNascimento)
+      },
+
+      computedDataPrimeiraAvaliacaoMedicaFormatada () {
+        return this.formataData(this.dataPrimeiraAvaliacaoMedica)
+      },
+
+      computedDataObitoFormatada () {
+        return this.formataData(this.dataObito)
+      },
+
+      computedDataInicioSintomasFormatada () {
+        return this.formataData(this.dataInicioSintomas)
+      },
+
+      computedDataColetaExameFormatada () {
+        return this.formataData(this.dataColetaExame)
+      },
+
+      computedDataResultadoFormatada () {
+        return this.formataData(this.dataResultado)
+      },
     },
 
     methods: {
       setAtendimento(atendimento){
-        this.idPaciente = atendimento.paciente_id;
-        this.dataLigacao = this.moment(atendimento.data_hora_ligacao).format('DD/MM/YYYY');
-        this.horaLigacao = atendimento.data_hora_ligacao.split(' ')[1];
-        this.emIsolamento = atendimento.isolamento;
-        this.orientacao = atendimento.orientacao;
-        this.conduta = atendimento.orientacao_conduta;
-        this.apetite = atendimento.apetite;
-        this.febre = atendimento.febre;
-        this.tosse = atendimento.tosse;
-        this.faltaArCansaco = atendimento.falta_de_ar;
-        this.observacaoGeral = atendimento.observacoes_gerais;
+        this.idPaciente = atendimento[0].paciente_id;
+        this.dataLigacao = this.moment(atendimento[0].data_hora_ligacao).format('DD/MM/YYYY');
+        this.horaLigacao = atendimento[0].data_hora_ligacao.split(' ')[1];
+        this.emIsolamento = atendimento[0].isolamento;
+        this.orientacao = atendimento[0].orientacao;
+
+        if(atendimento[0].orientacao_conduta == 'manter_isolamento_domiciliar')
+        {
+          this.conduta = "Manter Isolamento Domiciliar.";
+        }
+        else if(atendimento[0].orientacao_conduta == 'encaminhar_unidade_sintomatica')
+        {
+          this.conduta = "Encaminhar paciente a uma unidade sintomática.";
+        }
+        else
+        {
+          this.conduta = "Encaminhar para o SAMU";
+        }
+
+        this.apetite = atendimento[0].apetite;
+        this.febre = atendimento[0].febre;
+        this.tosse = atendimento[0].tosse;
+        this.faltaArCansaco = atendimento[0].falta_de_ar;
+        this.observacaoGeral = atendimento[0].observacoes_gerais;
+        
+        for(var i in atendimento[1][0])
+        {
+          atendimento[1][0][i].id = atendimento[1][0][i].sinais_id;
+        }
+
+        this.sinal = atendimento[1][0];
       },
 
       setPaciente(paciente){
-        this.cep = paciente.cep;
-        this.cidade = paciente.cidade;
-        this.uf = paciente.estado;
-        this.bairro = paciente.bairro;
-        this.logradouro = paciente.logradouro;
-        this.nome = paciente.nome;
-        this.numero = paciente.numero;
-        this.telefone = paciente.telefone;
-        this.cns = paciente.cns;
-        this.dataNascimento = paciente.data_nasc;
-        this.dataObito = paciente.obito;
-        this.dataPrimeiraAvaliacaoMedica= paciente.primeira_avaliacao_medica;
-        this.dataInicioSintomas = paciente.data_inicio_sintomas;
-        this.dataColetaExame = paciente.data_coleta_exames;
-        this.local = paciente.unidade_sintomatica_id;
-        this.tipoConvenio = paciente.convenio;
-        this.unidadeReferencia = paciente.unidade_saude_id;
-        this.tipoExame = paciente.tipo_exame;
-        this.dataResultado = paciente.data_resultado;
-        this.resultadoExame = paciente.resultado_exame;
-        this.grupoRisco = paciente.grupo_risco;
-        // this.familiares = 
-        // this.comorbidades = 
-        // this.sinais = 
+        this.cep = paciente[0].cep;
+        this.cidade = paciente[0].cidade;
+        this.uf = paciente[0].estado;
+        this.bairro = paciente[0].bairro;
+        this.logradouro = paciente[0].logradouro;
+        this.nome = paciente[0].nome;
+        this.numero = paciente[0].numero;
+        this.telefone = paciente[0].telefone;
+        this.cns = paciente[0].cns;
+        this.dataNascimento = paciente[0].data_nasc;
+        this.dataObito = paciente[0].obito;
+        this.dataPrimeiraAvaliacaoMedica = paciente[0].primeira_avaliacao_medica;
+        this.dataInicioSintomas = paciente[0].data_inicio_sintomas;
+        this.dataColetaExame = paciente[0].data_coleta_exames;
+        this.local = paciente[0].unidade_sintomatica_id;
+        this.tipoConvenio = paciente[0].convenio;
+        this.unidadeReferencia = paciente[0].unidade_saude_id;
+        this.tipoExame = paciente[0].tipo_exame;
+        this.dataResultado = paciente[0].data_resultado;
+        this.resultadoExame = paciente[0].resultado_exame;
+        this.grupoRisco = paciente[0].grupo_risco;
+        this.familiares = paciente[1];
+
+        for(var i in paciente[4])
+        {
+          paciente[4][i].id = paciente[4][i].comorbidades_id;
+        }
+
+        this.comorbidade = paciente[4];
       },
 
       async carregaAtendimento(){
-        await this.axios.get('/atendimentos/' + this.idAtendimento)
+        await this.axios.get('/show_atendimento_sinais/' + this.idAtendimento)
         .then((response) => {
           this.setAtendimento(response.data);
           
@@ -1061,7 +1268,7 @@ export default {
       },
 
       async carregaPaciente(){
-        await this.axios.get('/pacientes/' + this.idPaciente)
+        await this.axios.get('/show_sinais_familiares/' + this.idPaciente)
         .then((response) => {
           this.setPaciente(response.data);
         })
@@ -1071,7 +1278,7 @@ export default {
       },
 
       formataData(value){
-        return this.moment(value).format("DD/MM/YYYY");
+        return value == null ? null : this.moment(value).format("DD/MM/YYYY");
       },
 
       async carregaUnidadesReferencia(){
@@ -1140,6 +1347,18 @@ export default {
         if(this.$v.$invalid)
           return;
 
+        const result = await this.$swal({
+          title: 'Tem ceteza que deseja continuar?',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Sim',
+          cancelButtonText: 'Não'
+        });
+
+        if (!result.value) return;
+
         const parametros = {
           paciente_cep: this.cep,
           paciente_nome: this.nome,
@@ -1149,7 +1368,7 @@ export default {
           paciente_data_nasc: this.dataNascimento,
           paciente_obito: this.dataObito,
           paciente_primeira_avaliacao_medica: this.dataPrimeiraAvaliacaoMedica,
-          paciente_isolamento_ate: this.dataFimIsolamento.format('YYYY-MM-DD'),
+          paciente_isolamento_ate: this.dataFimIsolamento,
           paciente_data_inicio_sintomas: this.dataInicioSintomas,
           paciente_data_coleta_exames: this.dataColetaExame,
           paciente_unidade_sintomatica_id: this.local,
@@ -1170,8 +1389,8 @@ export default {
           atendimento_paciente_id: this.idPaciente,
           atendimento_usuario_id: this.$store.getters.getDadosUser.id,
           familiares: this.familiares,
-          comorbidades: this.comorbidades,
-          sinais: this.sinais
+          comorbidades: this.comorbidade,
+          sinais: this.sinal
         }
 
         await this.axios.post('/primeiro_cadastro', parametros )
@@ -1190,6 +1409,12 @@ export default {
             {
               this.conduta = "Encaminhar para o SAMU";
             }
+
+            this.$swal(
+              'Criado!',
+              'Operação realizada com sucesso!',
+              'success'
+            )
 
             this.dialogConduta = true;
           }
@@ -1276,37 +1501,9 @@ export default {
       menuDataNascimento (val) {
         val && setTimeout(() => (this.$refs.picker.activePicker = 'YEAR'))
       },
+
       dialog (val) {
         val || this.close()
-      },
-
-      dataNascimento (val) {
-        this.dataNascimentoFormatada = this.formataData(this.dataNascimento)
-      },
-
-      dataPrimeiraAvaliacaoMedica (val) {
-        this.dataPrimeiraAvaliacaoMedicaFormatada = this.formataData(this.dataPrimeiraAvaliacaoMedica)
-      },
-
-      dataObito (val) {
-        this.dataObitoFormatada = this.formataData(this.dataObito)
-      },
-
-      dataInicioSintomas (val) {
-        this.dataInicioSintomasFormatada = this.formataData(this.dataInicioSintomas)
-      },
-
-      dataColetaExame (val) {
-        this.dataFimIsolamento = this.moment(this.dataColetaExame).add(14, 'days')
-        this.dataColetaExameFormatada = this.formataData(this.dataColetaExame)
-      },
-
-      dataFimIsolamento (val) {
-        this.dataFimIsolamentoFormatada = this.formataData(this.dataFimIsolamento)
-      },
-
-      dataResultado (val) {
-        this.dataResultadoFormatada = this.formataData(this.dataResultado)
       },
 
       nomeFamiliar (val) {
@@ -1322,6 +1519,11 @@ export default {
       exameFamiliar (val) {
         if(this.exameFamiliar != null)
           this.exameFamiliarErros = ''
+      },
+
+      dataColetaExame (val) {
+        this.dataFimIsolamento = this.moment(this.dataColetaExame).add(14, 'days').format('YYYY-MM-DD');
+        this.dataFimIsolamentoFormatada = this.moment(this.dataColetaExame).add(14, 'days').format('DD/MM/YYYY');
       }
     }
 };

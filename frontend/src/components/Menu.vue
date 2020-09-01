@@ -47,7 +47,7 @@
             <v-list-item to="/atendimento/listagem">
               <v-list-item-title>Listagem</v-list-item-title>
             </v-list-item>
-            <v-list-item to="/atendimento/cadastro/0">
+            <v-list-item to="/atendimento/cadastro/0/0">
               <v-list-item-title>Cadastro</v-list-item-title>
             </v-list-item>
           </v-list-group>
