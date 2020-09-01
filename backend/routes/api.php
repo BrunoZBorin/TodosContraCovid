@@ -36,3 +36,4 @@ Route::get('/pacientes_export_pdf', 'API\PacienteController@export_pdf');
 Route::get('/atendimentos_export_excel', 'API\AtendimentoController@export_excel');
 Route::get('/atendimentos_export_pdf', 'API\AtendimentoController@export_pdf');
 Route::get('/show_sinais_familiares/{id}', 'API\PacienteController@show_sinais_familiares');
+Route::get('/show_atendimento_sinais/{id}', 'API\AtendimentoController@show_atendimento_sinais');

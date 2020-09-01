@@ -253,7 +253,7 @@ class PacienteController extends Controller
         {
             $paciente_comorbidades[] = PacienteComorbidades::create([
                 'paciente_id' => $paciente->id,
-                'comorbidades_id' => $comorbidade['id']
+                'comorbidades_id' => $comorbidade
             ]);
         }
 
@@ -263,7 +263,7 @@ class PacienteController extends Controller
         {
             $atendimento_sinais[] = AtendimentoSinais::create([
                 'atendimento_id' => $atendimento->id,
-                'sinais_id' => $sinal['id']
+                'sinais_id' => $sinal
             ]);
         }
 
