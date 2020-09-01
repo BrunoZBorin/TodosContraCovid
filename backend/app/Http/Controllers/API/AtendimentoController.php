@@ -109,16 +109,38 @@ class AtendimentoController extends Controller
     public function show($id)
     {
         $atendimento = Atendimento::findOrFail($id);
-        return response()->json($atendimento, 200);
+        $sinais = [];
+        $sinais[] = DB::table('sinais')
+            ->join('atendimento_sinais','sinais.id','=','atendimento_sinais.sinais_id')
+            ->where('atendimento_sinais.atendimento_id',$id)
+            ->get();
+        
+        $paciente = DB::table('pacientes')
+            ->where('pacientes.id', $id)
+            ->first();
+        
+        $comorbidades = [];
+        $comorbidades[] = DB::table('comorbidades',)
+            ->join('paciente_comorbidades','comorbidades.id','=','paciente_comorbidades.comorbidades_id')
+            ->where('paciente_comorbidades.paciente_id', $paciente->id)
+            ->get();
+        $familiares = [];    
+        $familiares[] = DB::table('familiars')
+            ->where('familiars.paciente_id', $paciente->id)
+            ->get();
+
+        return response()->json([$atendimento, $sinais, $paciente, $comorbidades, $familiares], 200);
     }
 
     public function show_atendimento_sinais($id)
     {
         $atendimento = Atendimento::findOrFail($id);
-        $sinais = DB::table('sinais')
-        ->join('atendimento_sinais','sinais.id','=','atendimento_sinais.sinais_id')
-        ->where('atendimento_sinais.atendimento_id',$id)
-        ->get();
+        $sinais = [];
+        $sinais[] = DB::table('sinais')
+            ->join('atendimento_sinais','sinais.id','=','atendimento_sinais.sinais_id')
+            ->where('atendimento_sinais.atendimento_id',$id)
+            ->get();
+        
         return response()->json([$atendimento, $sinais], 200);
     }
 
@@ -134,6 +156,7 @@ class AtendimentoController extends Controller
         $atendimento = Atendimento::findOrFail($id);
         $atendimento->fill($request->all());
         $atendimento->save();
+        
         return response()->json($atendimento, 200);
     }
     
