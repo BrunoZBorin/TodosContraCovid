@@ -34,7 +34,7 @@ const routes = [
         component: () => import("../views/Atendimento/Listagem")
       },
       {
-        path: "/atendimento/cadastro/:id",
+        path: "/atendimento/cadastro/:id/:paciente_id",
         name: "atendimento_cadastro",
         component: () => import("../views/Atendimento/Cadastro"),
         props: {

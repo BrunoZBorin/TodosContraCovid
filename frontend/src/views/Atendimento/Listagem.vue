@@ -94,7 +94,7 @@
       },
 
       abrirAtendimento(item) {
-        this.$router.push('/atendimento/cadastro/' + item.id);
+        this.$router.push('/atendimento/cadastro/' + item.id + '/' + item.paciente_id);
       },
     }
   }
