@@ -20,13 +20,20 @@ const routes = [
     component: () => import("../views/Dashboard")
   },
   {
-    path: "/home",
-    name: "home",
-    component: () => import("../views/Home"),
+    path: "/",
+    name: "principal",
+    component: () => import("../views/Principal"),
     meta: {
       requiresAuth: true
     },
     children: [
+      // Home
+      {
+        path: "/Home",
+        name: "home",
+        component: () => import("../views/Home")
+      },
+
       // Atendimento
       {
         path: "/atendimento/listagem",
