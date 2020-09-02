@@ -285,4 +285,11 @@ class PacienteController extends Controller
     {
         return $this->excel->download(new PacientesExport, 'Pacientes.pdf', Excel::DOMPDF);
     }
+    public function obitos(){
+        $obitos = DB::table('pacientes')
+                    ->whereNotNull('obito')
+                    ->count();
+        return response()->json($obitos, 200);
+    }
+
 }

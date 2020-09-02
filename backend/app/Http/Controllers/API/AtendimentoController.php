@@ -158,17 +158,17 @@ class AtendimentoController extends Controller
     {
         $updateAtendimento = DB::transaction(function() use ($request, $id) {
         $atendimento = Atendimento::findOrFail($id);
-        $atendimento->data_hora_ligacao = $request->data_hora_ligacao;
-        $atendimento->isolamento = $request->isolamento;
-        $atendimento->orientacao = $request->orientacao;
-        $atendimento->apetite = $request->apetite;
-        $atendimento->febre = $request->febre;
-        $atendimento->tosse = $request->tosse;
-        $atendimento->falta_de_ar = $request->falta_de_ar;
-        $atendimento->observacoes_gerais = $request->observacoes_gerais;
+        $atendimento->data_hora_ligacao = $request->atendimento_data_hora_ligacao;
+        $atendimento->isolamento = $request->atendimento_isolamento;
+        $atendimento->orientacao = $request->atendimento_orientacao;
+        $atendimento->apetite = $request->atendimento_apetite;
+        $atendimento->febre = $request->atendimento_febre;
+        $atendimento->tosse = $request->atendimento_tosse;
+        $atendimento->falta_de_ar = $request->atendimento_falta_de_ar;
+        $atendimento->observacoes_gerais = $request->atendimento_observacoes_gerais;
         
         $pontos = 0;
-        switch ($request->febre) {
+        switch ($request->atendimento_febre) {
             case 'ausente':
                 $pontos+=1;
                 break;
@@ -179,7 +179,7 @@ class AtendimentoController extends Controller
                 $pontos+=3;
                 break;
         }
-        switch ($request->tosse) {
+        switch ($request->atendimento_tosse) {
             case 'ausente':
                 $pontos+=1;
                 break;
@@ -190,7 +190,7 @@ class AtendimentoController extends Controller
                 $pontos+=3;
                 break;
         }
-        switch ($request->falta_de_ar) {
+        switch ($request->atendimento_falta_de_ar) {
             case 'ausente':
                 $pontos+=1;
                 break;
@@ -201,7 +201,7 @@ class AtendimentoController extends Controller
                 $pontos+=3;
                 break;
         }
-        $paciente = Paciente::findOrFail($request->paciente_id);
+        $paciente = Paciente::findOrFail($request->atendimento_paciente_id);
         $idade = Carbon::parse($paciente['data_nasc'])->age;
         if($idade<30){
             $pontos+=1;
@@ -222,8 +222,8 @@ class AtendimentoController extends Controller
         if($pontos>=10){
             $atendimento->orientacao_conduta = 'encaminhar_SAMU';
         }
-        $atendimento->paciente_id = $request->paciente_id;
-        $atendimento->usuario_id = $request->usuario_id;
+        $atendimento->paciente_id = $request->atendimento_paciente_id;
+        $atendimento->usuario_id = $request->atendimento_usuario_id;
         $atendimento->save();
         
         $atendimento_sinais[] = DB::table('atendimento_sinais')
@@ -340,4 +340,163 @@ class AtendimentoController extends Controller
     {
         return $this->excel->download(new AtendimentosExport, 'atendimentos.pdf', Excel::DOMPDF);
     }
+
+    public function store_atendimento_update_paciente(Request $request){
+        $createAtendimento = DB::transaction(function() use ($request) {
+            
+            $atendimento = Atendimento::create([
+                'data_hora_ligacao' => $request->atendimento_data_hora_ligacao,
+                'isolamento' => $request->atendimento_isolamento,
+                'orientacao' => $request->atendimento_orientacao,
+                'apetite' => $request->atendimento_apetite,
+                'febre' => $request->atendimento_febre,
+                'tosse' => $request->atendimento_tosse,
+                'falta_de_ar' => $request->atendimento_falta_de_ar,
+                'observacoes_gerais' => $request->atendimento_observacoes_gerais,
+                'paciente_id' => $request->atendimento_paciente_id,
+                'usuario_id' => $request->atendimento_usuario_id
+            ]);
+            $pontos = 0;
+            switch ($request->atendimento_febre) {
+                case 'ausente':
+                    $pontos+=1;
+                    break;
+                case 'pico_baixo' :
+                    $pontos+=2;
+                    break;
+                case 'persistente':
+                    $pontos+=3;
+                    break;
+            }
+            switch ($request->atendimento_tosse) {
+                case 'ausente':
+                    $pontos+=1;
+                    break;
+                case 'fala_sem_tossir':
+                    $pontos+=2;
+                    break;
+                case'fala_tossindo':
+                    $pontos+=3;
+                    break;
+            }
+            switch ($request->atendimento_falta_de_ar) {
+                case 'ausente':
+                    $pontos+=1;
+                    break;
+                case 'presente_ao_esforco':
+                    $pontos+=2;
+                    break;
+                case 'intensa_no_repouso':
+                    $pontos+=3;
+                    break;
+            }
+            $paciente = Paciente::findOrFail($request->atendimento_paciente_id);
+            $idade = Carbon::parse($paciente['data_nasc'])->age;
+            if($idade<30){
+                $pontos+=1;
+            }
+            if($idade>=30 && $idade<60){
+                $pontos+=2;
+            }
+            if($pontos>=60){
+                $pontos+=3;
+            }
+                
+            if($pontos<=6){
+                $atendimento->orientacao_conduta = 'manter_isolamento_domiciliar'; 
+            }
+            if($pontos>=7 && $pontos<=9){
+                $atendimento->orientacao_conduta = 'encaminhar_unidade_sintomatica'; 
+            }
+            if($pontos>=10){
+                $atendimento->orientacao_conduta = 'encaminhar_SAMU';
+            }
+            
+            $paciente->nome = $request->paciente_nome;
+            $paciente->cep = $request->paciente_cep;
+            $endereco = \Correios::cep($request->paciente_cep);
+            if(empty($endereco)) {
+                return response("Endereço não encontrado.", 500);
+            }
+            $paciente->logradouro = $endereco['logradouro'];
+            $paciente->bairro = $endereco['bairro'];
+            $paciente->cidade = $endereco['cidade'];
+            $paciente->estado = $endereco['uf'];
+            $paciente->numero = $request->paciente_numero;
+            $paciente->telefone = $request->paciente_telefone;
+            $paciente->cns = $request->paciente_cns;
+            $paciente->data_nasc = $request->paciente_data_nasc;
+            $paciente->obito = $request->paciente_obito;
+            $paciente->primeira_avaliacao_medica = $request->paciente_primeira_avaliacao_medica;
+            $paciente->isolamento_ate = $request->paciente_isolamento_ate;
+            $paciente->data_inicio_sintomas = $request->paciente_data_inicio_sintomas;
+            $paciente->data_coleta_exames = $request->paciente_data_coleta_exames;
+            $paciente->unidade_sintomatica_id = $request->paciente_unidade_sintomatica_id;
+            $paciente->convenio = $request->paciente_convenio;
+            $paciente->unidade_saude_id = $request->paciente_unidade_saude_id;
+            $paciente->tipo_exame = $request->paciente_tipo_exame;
+            $paciente->data_resultado = $request->paciente_data_resultado;
+            $paciente->resultado_exame = $request->paciente_resultado_exame;
+            $paciente->grupo_risco = $request->paciente_grupo_risco;
+            $paciente->save();
+            
+
+            $atendimento_sinais[] = DB::table('atendimento_sinais')
+            ->where('atendimento_sinais.atendimento_id',$atendimento->id)
+            ->get();
+              
+            $sinais = $request->sinais;
+            foreach($atendimento_sinais[0] as $key=> $a_s)
+            {
+                if(isset($sinais[$key]))
+                {
+                    $as = AtendimentoSinais::findOrFail($a_s->id);
+                    $as->sinais_id = $sinais[$key]['id'];
+                    $as->save();
+                    $atendimento_sinais[$key]=$as;
+                }
+            }
+        
+
+            $paciente_comorbidades[] = DB::table('paciente_comorbidades')
+            ->where('paciente_comorbidades.paciente_id',$paciente->id)
+            ->get();
+        
+            $comorbidades = $request->comorbidades;
+            foreach($paciente_comorbidades[0] as $key=> $p_c)
+            {
+                if(isset($comorbidades[$key]))
+                {
+                    $pc = PacienteComorbidades::findOrFail($p_c->id);
+                    $pc->comorbidades_id = $comorbidades[$key]['id'];
+                    $pc->save();
+                    $paciente_comorbidades[$key]=$pc;
+                }
+            }
+            
+            
+            $familiares[] = DB::table('familiars')
+                ->where('familiars.paciente_id', $paciente->id)
+                ->get();
+                
+            $familia = $request->familiares;
+            foreach($familiares[0] as $key=> $familiar)
+            {
+                if(isset($familia[$key]))
+                {
+                    $f = Familiar::findOrFail($familiar->id);
+                    $f->nome = $familia[$key]['familiares_nome'];
+                    $f->sintomatico = $familia[$key]['familiares_sintomatico'];
+                    $f->exame = $familia[$key]['familiares_exame'];
+                    $f->save();
+                    $familiares[$key]=$f;
+                }
+            }
+            return response()->json([$atendimento, $paciente],201);
+        });
+        return response()->json($createAtendimento, 200);
+
+    }
+
+    
 }
