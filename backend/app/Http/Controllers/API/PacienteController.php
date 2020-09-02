@@ -211,7 +211,7 @@ class PacienteController extends Controller
                 $pontos+=3;
                 break;
         }
-        //$paciente = Paciente::findOrFail($request->paciente_id);
+        
         $idade = Carbon::parse($paciente['data_nasc'])->age;
         if($idade<30){
             $pontos+=1;
@@ -290,6 +290,35 @@ class PacienteController extends Controller
                     ->whereNotNull('obito')
                     ->count();
         return response()->json($obitos, 200);
+    }
+
+    public function idades(){
+        $pacientes = Paciente::all();
+        $menosTrinta = 0;
+        $menosSessenta = 0;
+        $maisSessenta = 0;
+        foreach($pacientes as $paciente){
+            $idade = Carbon::parse($paciente['data_nasc'])->age;
+            if($idade<30){
+                $menosTrinta++;
+            }
+            if($idade>=30 && $idade<60){
+                $menosSessenta++;
+            }
+            if($idade>=60){
+                $maisSessenta++;
+            }   
+        }
+        return response()->json([$menosTrinta, $menosSessenta, $maisSessenta], 200);
+    }
+    
+    public function pacientes_com_comorbidades(){
+        $comorbidades = DB::table('pacientes')
+                    ->join('paciente_comorbidades', 'pacientes.id', '=', 'paciente_comorbidades.paciente_id')
+                    ->whereNotNull('paciente_comorbidades.comorbidades_id')
+                    ->count();
+        
+        return response()->json($comorbidades, 200);
     }
 
 }
