@@ -279,36 +279,47 @@ class AtendimentoController extends Controller
             
 
             $paciente_comorbidades[] = DB::table('paciente_comorbidades')
-                ->where('paciente_comorbidades.paciente_id',$paciente->id)
-                ->get();
-            
+            ->where('paciente_comorbidades.paciente_id',$paciente->id)
+            ->get();
+                if(isset($paciente_comorbidades)){
+                foreach($paciente_comorbidades[0] as $pc){
+                    $p_c = PacienteComorbidades::findOrFail($pc->id);
+                    $p_c->delete();
+                }
+            }
+            $paciente_comorbidades=[];
             $comorbidades = $request->comorbidades;
-            foreach($paciente_comorbidades[0] as $key=> $p_c)
-            {
-                if(isset($comorbidades[$key]))
-                {
-                    $pc = PacienteComorbidades::findOrFail($p_c->id);
-                    $pc->comorbidades_id = $comorbidades[$key];
-                    $pc->save();
-                    $paciente_comorbidades[$key]=$pc;
+                if(isset($comorbidades)){
+                foreach($comorbidades as $key=> $c){
+                    $p_c = PacienteComorbidades::create([
+                        'paciente_id' => $paciente->id,
+                        'comorbidades_id' => $c
+                    ]);
+                    $paciente_comorbidades[] = $p_c;
                 }
             }
             
             
             $familiares[] = DB::table('familiars')
-                ->where('familiars.paciente_id', $paciente->id)
-                ->get();
-                
+            ->where('familiars.paciente_id', $paciente->id)
+            ->get();
+            if(isset($familiares)){
+                foreach($familiares[0] as $f){
+                    $fm = Familiar::findOrFail($f->id);
+                    $fm->delete();
+                }
+            }
+            $familiares = [];
             $familia = $request->familiares;
-            foreach($familiares[0] as $key=> $familiar)
-            {
-                if(isset($familia[$key]))
-                {
-                    $f = Familiar::findOrFail($familiar->id);
-                    $f->nome = $familia[$key]['nome'];
-                    $f->sintomatico = $familia[$key]['sintomatico'];
-                    $f->exame = $familia[$key]['exame'];
-                    $f->save();
+            if(isset($familia)){
+                foreach($familia as $key=> $familiar)
+                {   
+                    $f = Familiar::create([
+                        'nome'=> $familiar['nome'],
+                        'sintomatico'=> $familiar['sintomatico'],
+                        'exame'=> $familiar['exame'],
+                        'paciente_id'=>$paciente->id
+                    ]);
                     $familiares[$key]=$f;
                 }
             }
@@ -456,43 +467,45 @@ class AtendimentoController extends Controller
             $paciente_comorbidades[] = DB::table('paciente_comorbidades')
             ->where('paciente_comorbidades.paciente_id',$paciente->id)
             ->get();
-        
+                if(isset($paciente_comorbidades)){
+                foreach($paciente_comorbidades[0] as $pc){
+                    $p_c = PacienteComorbidades::findOrFail($pc->id);
+                    $p_c->delete();
+                }
+            }
+            $paciente_comorbidades=[];
             $comorbidades = $request->comorbidades;
-    
-
-            foreach($comorbidades as $key=> $c)
-            {
-                if(isset($paciente_comorbidades[0][$key]->id))
-                {   
-                    $pc = PacienteComorbidades::findOrFail($paciente_comorbidades[0][$key]->id);
-                    $pc->comorbidades_id = $c;
-                    $pc->save();
-                    $paciente_comorbidades[$key]=$pc;
-                }else{
-                    $pc = PacienteComorbidades::create([
+                if(isset($comorbidades)){
+                foreach($comorbidades as $key=> $c){
+                    $p_c = PacienteComorbidades::create([
                         'paciente_id' => $paciente->id,
                         'comorbidades_id' => $c
                     ]);
-                    $paciente_comorbidades[$key]=$pc;
+                    $paciente_comorbidades[] = $p_c;
                 }
-
             }
             
-            
+
             $familiares[] = DB::table('familiars')
                 ->where('familiars.paciente_id', $paciente->id)
                 ->get();
-             
+            if(isset($familiares)){
+                foreach($familiares[0] as $f){
+                    $fm = Familiar::findOrFail($f->id);
+                    $fm->delete();
+                }
+            }
+            $familiares = [];
             $familia = $request->familiares;
-            foreach($familiares[0] as $key=> $familiar)
-            {   
-                if(isset($familia[$key]))
-                {
-                    $f = Familiar::findOrFail($familiar->id);
-                    $f->nome = $familia[$key]['nome'];
-                    $f->sintomatico = $familia[$key]['sintomatico'];
-                    $f->exame = $familia[$key]['exame'];
-                    $f->save();
+            if(isset($familia)){
+                foreach($familia as $key=> $familiar)
+                {   
+                    $f = Familiar::create([
+                        'nome'=> $familiar['nome'],
+                        'sintomatico'=> $familiar['sintomatico'],
+                        'exame'=> $familiar['exame'],
+                        'paciente_id'=>$paciente->id
+                    ]);
                     $familiares[$key]=$f;
                 }
             }
@@ -526,5 +539,58 @@ class AtendimentoController extends Controller
         
     }
 
+    public function listagem_diaria(){
+        $hoje = Carbon::now();
+        $datas_nao_risco = [];
+        $idoso = Carbon::now()->subYears(60);
+        
+        $idosos = DB::table('pacientes')
+                        ->where('pacientes.data_nasc','<', $idoso)
+                        ->select('pacientes.*');
+        
+        $nao_idosos = DB::table('pacientes')
+                        ->where('pacientes.data_nasc','>', $idoso)
+                        ->select('pacientes.*');
+                                 
+        $grupo_risco = DB::table('pacientes')
+                        ->join('paciente_comorbidades', 'pacientes.id', '=', 'paciente_comorbidades.paciente_id')
+                        ->whereNotNull('paciente_comorbidades.comorbidades_id')
+                        ->where('pacientes.isolamento_ate','>',$hoje)
+                        ->union($idosos)
+                        ->select('pacientes.*')
+                        ->get();
+
+        $grupo_nao_risco = DB::table('pacientes')
+                        ->leftJoin('paciente_comorbidades', 'pacientes.id', '=', 'paciente_comorbidades.paciente_id')
+                        ->whereNull('paciente_comorbidades.comorbidades_id')
+                        ->where('pacientes.isolamento_ate','>',$hoje)
+                        ->where('pacientes.data_nasc','>', $idoso)
+                        ->select('pacientes.*')
+                        ->get();
+                        
+        /*$atendidos = DB::table('pacientes')
+                        ->join('paciente_comorbidades', 'pacientes.id', '=', 'paciente_comorbidades.paciente_id')
+                        ->whereNotNull('paciente_comorbidades.comorbidades_id')
+                        ->leftJoin('atendimentos','pacientes.id','=','atendimentos.paciente_id')
+                        ->whereDate('atendimentos.data_hora_ligacao','!=', $hoje)
+                        ->where('pacientes.isolamento_ate','>',$hoje)
+                        ->union($idosos)
+                        ->select('pacientes.*')
+                        ->get();*/
+
+        $atendidos = DB::table('pacientes')
+                        ->join('paciente_comorbidades', 'pacientes.id', '=', 'paciente_comorbidades.paciente_id')
+                        ->join('atendimentos','pacientes.id','=','atendimentos.paciente_id')
+                        ->select(DB::raw('atendimentos.data_hora_ligacao as ligacao'))
+                        ->whereDate('ligacao','<>', $hoje)
+                        ->whereNotNull('paciente_comorbidades.comorbidades_id')
+                        ->where('pacientes.isolamento_ate','>',$hoje)
+                        ->union($idosos)
+                        ->select('pacientes.*')
+                        ->get();
+        
+        return response()->json([$atendidos, $grupo_risco, $grupo_nao_risco], 200);
+        
+    }
     
 }

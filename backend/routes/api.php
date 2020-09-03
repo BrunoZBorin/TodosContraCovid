@@ -33,12 +33,17 @@ Route::post('/register', 'API\AuthController@register');
 Route::post('/login', 'API\AuthController@login');
 Route::get('/pacientes_export_excel', 'API\PacienteController@export_excel');
 Route::get('/pacientes_export_pdf', 'API\PacienteController@export_pdf');
+Route::get('/atendimentos_export_excel', 'API\AtendimentoController@export_excel');
+Route::get('/atendimentos_export_pdf', 'API\AtendimentoController@export_pdf');
+//Graficos
+Route::get('/atendimentos_por_data', 'API\AtendimentoController@atendimentos_por_data');
 Route::get('/pacientes_obitos', 'API\PacienteController@obitos');
 Route::get('/pacientes_idades', 'API\PacienteController@idades');
 Route::get('/pacientes_com_comorbidades', 'API\PacienteController@pacientes_com_comorbidades');
-Route::get('/atendimentos_export_excel', 'API\AtendimentoController@export_excel');
-Route::get('/atendimentos_export_pdf', 'API\AtendimentoController@export_pdf');
-Route::post('/atendimento_create_paciente_update', 'API\AtendimentoController@store_atendimento_update_paciente');
-Route::get('/atendimentos_por_data', 'API\AtendimentoController@atendimentos_por_data');
+Route::get('/casos_finalizados', 'API\PacienteController@casos_finalizados');
+Route::get('/casos_positivos', 'API\PacienteController@casos_positivos');
+
+Route::get('/listagem_diaria', 'API\AtendimentoController@listagem_diaria');
 Route::get('/show_sinais_familiares/{id}', 'API\PacienteController@show_sinais_familiares');
 Route::get('/show_atendimento_sinais/{id}', 'API\AtendimentoController@show_atendimento_sinais');
+Route::post('/atendimento_create_paciente_update', 'API\AtendimentoController@store_atendimento_update_paciente');
