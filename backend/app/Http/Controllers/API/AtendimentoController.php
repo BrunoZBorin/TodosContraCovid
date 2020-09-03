@@ -305,9 +305,9 @@ class AtendimentoController extends Controller
                 if(isset($familia[$key]))
                 {
                     $f = Familiar::findOrFail($familiar->id);
-                    $f->nome = $familia[$key]['familiares_nome'];
-                    $f->sintomatico = $familia[$key]['familiares_sintomatico'];
-                    $f->exame = $familia[$key]['familiares_exame'];
+                    $f->nome = $familia[$key]['nome'];
+                    $f->sintomatico = $familia[$key]['sintomatico'];
+                    $f->exame = $familia[$key]['exame'];
                     $f->save();
                     $familiares[$key]=$f;
                 }
@@ -489,9 +489,9 @@ class AtendimentoController extends Controller
                 if(isset($familia[$key]))
                 {
                     $f = Familiar::findOrFail($familiar->id);
-                    $f->nome = $familia[$key]['familiares_nome'];
-                    $f->sintomatico = $familia[$key]['familiares_sintomatico'];
-                    $f->exame = $familia[$key]['familiares_exame'];
+                    $f->nome = $familia[$key]['nome'];
+                    $f->sintomatico = $familia[$key]['sintomatico'];
+                    $f->exame = $familia[$key]['exame'];
                     $f->save();
                     $familiares[$key]=$f;
                 }
