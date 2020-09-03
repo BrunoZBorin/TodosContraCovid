@@ -237,34 +237,37 @@ class PacienteController extends Controller
         
         $familiares = $request->familiares;
         $familiars = [];
-        foreach($familiares as $familia)
-        {
-            $familiars[]=Familiar::create([
-                'nome' => $familia['nome'],
-                'sintomatico' => $familia['sintomatico'],
-                'exame' => $familia['exame'],
-                'paciente_id' => $paciente->id,
-                ]);
+        if(isset($familiares)){
+            foreach($familiares as $familia){
+                $familiars[]=Familiar::create([
+                    'nome' => $familia['nome'],
+                    'sintomatico' => $familia['sintomatico'],
+                    'exame' => $familia['exame'],
+                    'paciente_id' => $paciente->id,
+                    ]);
+            }
         }
 
         $comorbidades = $request->comorbidades;
         $paciente_comorbidades = [];
-        foreach($comorbidades as $comorbidade)
-        {
-            $paciente_comorbidades[] = PacienteComorbidades::create([
-                'paciente_id' => $paciente->id,
-                'comorbidades_id' => $comorbidade
-            ]);
+        if(isset($comorbidades)){
+            foreach($comorbidades as $comorbidade){
+                $paciente_comorbidades[] = PacienteComorbidades::create([
+                    'paciente_id' => $paciente->id,
+                    'comorbidades_id' => $comorbidade
+                ]);
+            }
         }
-
+        
         $sinais = $request->sinais;
         $atendimento_sinais = [];
-        foreach($sinais as $sinal)
-        {
-            $atendimento_sinais[] = AtendimentoSinais::create([
-                'atendimento_id' => $atendimento->id,
-                'sinais_id' => $sinal
-            ]);
+        if(isset($sinais)){
+            foreach($sinais as $sinal){
+                $atendimento_sinais[] = AtendimentoSinais::create([
+                    'atendimento_id' => $atendimento->id,
+                    'sinais_id' => $sinal
+                ]);
+            }
         }
 
         return response()->json([$paciente,$atendimento, $familiars, $paciente_comorbidades, $atendimento_sinais], 201);
@@ -319,6 +322,24 @@ class PacienteController extends Controller
                     ->count();
         
         return response()->json($comorbidades, 200);
+    }
+    
+    public function casos_finalizados(){
+        $hoje = Carbon::now();
+        $finalizados = DB::table('pacientes')
+                        ->where('pacientes.resultado_exame','negativo')
+                        ->whereDate('pacientes.isolamento_ate','<',$hoje)
+                        ->count();
+
+        return response()->json($finalizados, 200);
+    }
+
+    public function casos_positivos(){
+        $positivos = DB::table('pacientes')
+                        ->where('pacientes.resultado_exame','positivo')
+                        ->count();
+
+        return response()->json($positivos, 200);
     }
 
 }
