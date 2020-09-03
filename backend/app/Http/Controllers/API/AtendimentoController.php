@@ -548,18 +548,6 @@ class AtendimentoController extends Controller
                         ->where('pacientes.data_nasc','<', $idoso)
                         ->select('pacientes.*');
         
-        $nao_idosos = DB::table('pacientes')
-                        ->where('pacientes.data_nasc','>', $idoso)
-                        ->select('pacientes.*');
-                                 
-        $grupo_risco = DB::table('pacientes')
-                        ->join('paciente_comorbidades', 'pacientes.id', '=', 'paciente_comorbidades.paciente_id')
-                        ->whereNotNull('paciente_comorbidades.comorbidades_id')
-                        ->where('pacientes.isolamento_ate','>',$hoje)
-                        ->union($idosos)
-                        ->select('pacientes.*')
-                        ->get();
-
         $grupo_nao_risco = DB::table('pacientes')
                         ->leftJoin('paciente_comorbidades', 'pacientes.id', '=', 'paciente_comorbidades.paciente_id')
                         ->whereNull('paciente_comorbidades.comorbidades_id')
@@ -567,29 +555,45 @@ class AtendimentoController extends Controller
                         ->where('pacientes.data_nasc','>', $idoso)
                         ->select('pacientes.*')
                         ->get();
-                        
-        /*$atendidos = DB::table('pacientes')
+        
+        $grupo_risco = DB::table('pacientes')
                         ->join('paciente_comorbidades', 'pacientes.id', '=', 'paciente_comorbidades.paciente_id')
-                        ->whereNotNull('paciente_comorbidades.comorbidades_id')
-                        ->leftJoin('atendimentos','pacientes.id','=','atendimentos.paciente_id')
-                        ->whereDate('atendimentos.data_hora_ligacao','!=', $hoje)
-                        ->where('pacientes.isolamento_ate','>',$hoje)
-                        ->union($idosos)
-                        ->select('pacientes.*')
-                        ->get();*/
-
-        $atendidos = DB::table('pacientes')
-                        ->join('paciente_comorbidades', 'pacientes.id', '=', 'paciente_comorbidades.paciente_id')
-                        ->join('atendimentos','pacientes.id','=','atendimentos.paciente_id')
-                        ->select(DB::raw('atendimentos.data_hora_ligacao as ligacao'))
-                        ->whereDate('ligacao','<>', $hoje)
                         ->whereNotNull('paciente_comorbidades.comorbidades_id')
                         ->where('pacientes.isolamento_ate','>',$hoje)
                         ->union($idosos)
                         ->select('pacientes.*')
                         ->get();
         
-        return response()->json([$atendidos, $grupo_risco, $grupo_nao_risco], 200);
+        $atendidos = DB::table('atendimentos')
+                        ->whereDate('atendimentos.data_hora_ligacao', $hoje)
+                        ->select('atendimentos.*')
+                        ->get();
+
+        $id_atendimentos = [];
+        
+        for($i=0; $i<count($atendidos); $i++){
+            $id_atendimentos[]=$atendidos[$i]->paciente_id;
+        }
+
+        $risco=[];
+        foreach($grupo_risco as $gr){
+            if (in_array($gr->id, $id_atendimentos)) { 
+                
+            }else{
+                $risco[]=$gr;
+            }
+        }
+        $nao_risco=[];
+        foreach($grupo_nao_risco as $gnp){
+            if (in_array($gnp->id, $id_atendimentos)) { 
+                
+            }else{
+                $nao_risco[]=$gnp;
+            }
+        }
+        
+        dd($risco);
+        return response()->json([$risco, $nao_risco], 200);
         
     }
     
