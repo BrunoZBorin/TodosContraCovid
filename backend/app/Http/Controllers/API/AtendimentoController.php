@@ -458,25 +458,34 @@ class AtendimentoController extends Controller
             ->get();
         
             $comorbidades = $request->comorbidades;
-            foreach($paciente_comorbidades[0] as $key=> $p_c)
+    
+
+            foreach($comorbidades as $key=> $c)
             {
-                if(isset($comorbidades[$key]))
-                {
-                    $pc = PacienteComorbidades::findOrFail($p_c->id);
-                    $pc->comorbidades_id = $comorbidades[$key];
+                if(isset($paciente_comorbidades[0][$key]->id))
+                {   
+                    $pc = PacienteComorbidades::findOrFail($paciente_comorbidades[0][$key]->id);
+                    $pc->comorbidades_id = $c;
                     $pc->save();
                     $paciente_comorbidades[$key]=$pc;
+                }else{
+                    $pc = PacienteComorbidades::create([
+                        'paciente_id' => $paciente->id,
+                        'comorbidades_id' => $c
+                    ]);
+                    $paciente_comorbidades[$key]=$pc;
                 }
+
             }
             
             
             $familiares[] = DB::table('familiars')
                 ->where('familiars.paciente_id', $paciente->id)
                 ->get();
-                
+             
             $familia = $request->familiares;
             foreach($familiares[0] as $key=> $familiar)
-            {
+            {   
                 if(isset($familia[$key]))
                 {
                     $f = Familiar::findOrFail($familiar->id);
@@ -487,10 +496,34 @@ class AtendimentoController extends Controller
                     $familiares[$key]=$f;
                 }
             }
-            return response()->json([$atendimento, $paciente, $atendimento_sinais, $paciente_comorbidades],201);
+            return response()->json([$atendimento, $paciente, $atendimento_sinais, $paciente_comorbidades, $familiares],201);
         });
         return response()->json($createAtendimento, 200);
 
+    }
+
+    
+    public function atendimentos_por_data(){
+        $hoje = Carbon::now();
+      
+        $atendimento_hoje = DB::table('atendimentos')
+                            ->whereDate('data_hora_ligacao',$hoje)
+                            ->count();
+
+        $semana = Carbon::now()->subDays(7);
+
+        $atendimento_semana = DB::table('atendimentos')
+                            ->whereDate('data_hora_ligacao','>', $semana)
+                            ->count();
+
+        $mes = Carbon::now()->subDays(30);
+
+        $atendimento_mes = DB::table('atendimentos')
+                            ->whereDate('data_hora_ligacao','>', $mes)
+                            ->count();
+
+        return response()->json([$atendimento_hoje, $atendimento_semana, $atendimento_mes], 200);
+        
     }
 
     

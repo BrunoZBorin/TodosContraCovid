@@ -39,5 +39,6 @@ Route::get('/pacientes_com_comorbidades', 'API\PacienteController@pacientes_com_
 Route::get('/atendimentos_export_excel', 'API\AtendimentoController@export_excel');
 Route::get('/atendimentos_export_pdf', 'API\AtendimentoController@export_pdf');
 Route::post('/atendimento_create_paciente_update', 'API\AtendimentoController@store_atendimento_update_paciente');
+Route::get('/atendimentos_por_data', 'API\AtendimentoController@atendimentos_por_data');
 Route::get('/show_sinais_familiares/{id}', 'API\PacienteController@show_sinais_familiares');
 Route::get('/show_atendimento_sinais/{id}', 'API\AtendimentoController@show_atendimento_sinais');
