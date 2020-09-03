@@ -1,59 +1,41 @@
 <template>
     <v-main>
 		<v-container>
-            <v-select
-                v-model="unidade"
-                :items="['Unidade 1', 'Unidade 2']"
-                @change="handleUnidade"
-                dense
-                solo
-                outlined
-            >
-            </v-select>
-            <!-- <div style="display: flex;">
-                <Chart v-for="item in items"
-                    :key="item.title"
-                    :title="item.title"
-                    :color="item.color"
-                />
-            </div> -->
-            <v-row>
-                <v-col cols="12" md="6" v-for="item in items" :key="item.title">
-                    <Chart
-                        :title="item.title"
-                        :color="item.color"
-                    />
-                </v-col>
-            </v-row>
+            <v-card class="blue lighten-3">
+                <v-card-title>Dashboard</v-card-title>
+                <v-card-text>
+                    <v-row>
+                        <v-col>
+                            <v-card>
+                                <v-card-title>Idades</v-card-title>
+                                <v-card-text>
+                                    <BarChart />
+                                </v-card-text>
+                            </v-card>
+                        </v-col>
+                        <v-col>
+                            <v-card>
+                                <v-card-title>Totais</v-card-title>
+                                <v-card-text>
+                                    <PieChart />
+                                </v-card-text>
+                            </v-card>
+                        </v-col>
+                    </v-row>
+                </v-card-text>
+            </v-card>
 		</v-container>
     </v-main>
 </template>
 
 <script>
-import Chart from '../components/Charts/Chart';
+import BarChart from '@/components/Charts/Dashboard/BarChart';
+import PieChart from '@/components/Charts/Dashboard/PieChart';
 
 export default {
     components: {
-        Chart
+        BarChart,
+        PieChart
     },
-
-    data() {
-        return {
-            unidade: 'Unidade 1',
-            items: [
-                { title: 'Casos Finalizados', color: 'green' },
-                { title: 'Faixa Etária dos Pacientes', color: 'blue' },
-                { title: 'Faixa Etária dos Pacientes', color: 'blue' },
-                { title: 'Faixa Etária dos Pacientes', color: 'blue' },
-                { title: 'Faixa Etária dos Pacientes', color: 'blue' },
-            ]
-        }
-    },
-
-    methods: {
-        handleUnidade(event) {
-            console.log(event);
-        }
-    }
 }
 </script>
