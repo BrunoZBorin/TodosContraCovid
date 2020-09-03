@@ -1,6 +1,6 @@
 <template>
     <v-main>
-        <v-container class="fill-height" fluid>
+        <v-container>
             <div>
                 <div class="box">
                     <a class="login" @click="$router.push('/login')">
@@ -108,16 +108,16 @@
 
     .box .login>div:hover {
         transform: translateY(-7px);
-        border-color: rgb(255 255 255);
+        border-color: rgb(0 0 0);
     }
 
     .box .dashboard>div:hover {
         transform: translateY(-7px);
-        border-color: rgb(16 255 0);
+        border-color: rgb(0 0 0);
     }
 
     .box a>div {
-        background: rgb(64 141 150);
+        background: #90CAF9;
         position: relative;
         border-radius: 8px;
         transition: all 0.2s ease 0s;
@@ -127,7 +127,7 @@
         flex-direction: column;
         -webkit-box-pack: justify;
         justify-content: space-between;
-        border: 2px solid rgb(64 141 150);
+        border: 2px solid #90CAF9;
     }
 
     .box a .item {
@@ -157,11 +157,11 @@
     }
 
     .box .login p {
-        color: rgb(255 255 255);
+        color: rgb(0 0 0);
     }
 
     .box .dashboard p {
-        color: rgb(16 255 0);
+        color: rgb(0 0 0);
     }
 
     @media (max-width: 768px) {
