@@ -101,7 +101,7 @@
 <script>
 
 import { validationMixin } from 'vuelidate';
-import { required, maxLength, minLength } from 'vuelidate/lib/validators';
+import { required, maxLength, minLength, email } from 'vuelidate/lib/validators';
 
 export default {
 
@@ -109,7 +109,7 @@ export default {
 
   validations: {
     nome: { required },
-    email: { required },
+    email: { required, email },
     password: { required },
     telefone: { required },
     perfil: { required },
@@ -230,6 +230,7 @@ export default {
       const errors = []
       if (!this.$v.email.$dirty) return errors
       !this.$v.email.required && errors.push('O e-mail é necessário.')
+      !this.$v.email.email && errors.push('O e-mail é inválido.')
       return errors
     },
     passwordErros () {
