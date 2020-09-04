@@ -60,16 +60,21 @@
 					search: '',
           loading: false,
           tempoRequisicao: 180 * 1000,
+          myTimer: null
 				}
 			},
 
 			mounted() {
           this.getLigacao();
           
-          setInterval(() => {
+          this.myTimer = setInterval(() => {
             this.getLigacao();
           }, this.tempoRequisicao);
-			},
+      },
+      
+      beforeDestroy () {
+        clearInterval(this.myTimer);
+      },
 
       methods: {
 				async getLigacao() {
