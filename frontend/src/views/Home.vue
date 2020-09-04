@@ -58,12 +58,17 @@
 					],
 					items: [],
 					search: '',
-					loading: false
+          loading: false,
+          tempoRequisicao: 180 * 1000,
 				}
 			},
 
 			mounted() {
-					this.getLigacao();
+          this.getLigacao();
+          
+          setInterval(() => {
+            this.getLigacao();
+          }, this.tempoRequisicao);
 			},
 
       methods: {
