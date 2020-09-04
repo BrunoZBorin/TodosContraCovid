@@ -280,15 +280,16 @@ class AtendimentoController extends Controller
                 ->where('atendimento_sinais.atendimento_id',$id)
                 ->get();
             
-            if(isset($atendimento_sinais)){
+            if(sizeof($atendimento_sinais) > 0){
               foreach($atendimento_sinais[0] as $as){
-                    $a_s = PacienteComorbidades::findOrFail($as->id);
+                    $a_s = AtendimentoSinais::findOrFail($as->id);
                     $a_s->delete();
                 }
             }
-            $sinais = $request->sinais;    
-            if(isset($sinais)){
-                    foreach($sinais as $s){
+            $atendimentos_sinais = $request->sinais;
+            $sinais = $request->sinais;
+            if(sizeof($sinais) > 0){
+                    foreach($sinais as $key=> $s){
                     $a_s = AtendimentoSinais::create([
                         'atendimento_id'=>$atendimento->id,
                         'sinais_id'=>$s
