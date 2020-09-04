@@ -41,17 +41,137 @@ class AtendimentosExport implements FromCollection,
             ->select('users.id')
             ->get();
             $usuarios_id=[];
-         foreach($usuarios as $users){
-             $usuarios_id[] = $users->id;
-         }
+		foreach($usuarios as $users){
+			$usuarios_id[] = $users->id;
+		}
          
         if($user->perfil=='monitoramento')
         {
-           return Atendimento::whereIn('usuario_id', $usuarios_id)->get();
+			$dados = Atendimento::whereIn('usuario_id', $usuarios_id)->get();
+
+			foreach($dados as $dado)
+			{
+				if($dado->orientacao_conduta == 'manter_isolamento_domiciliar')
+				{
+					$dado->orientacao_conduta = "Manter Isolamento Domiciliar";
+				}
+				else if($dado->orientacao_conduta == 'encaminhar_unidade_sintomatica')
+				{
+					$dado->orientacao_conduta = "Encaminhar paciente a uma unidade sintomática";
+				}
+				else
+				{
+					$dado->orientacao_conduta = "Encaminhar para o SAMU";
+				}
+
+				$dado->data_hora_ligacao = implode('/', array_reverse(explode('-', explode(' ', $dado->data_hora_ligacao)[0]))) . ' ' . explode(' ', $dado->data_hora_ligacao)[1];
+
+				if($dado->isolamento == 'sim')
+					$dado->isolamento = 'Sim';
+				else
+					$dado->isolamento = 'Não';
+
+				if($dado->orientacao == 'bem')
+					$dado->orientacao = 'Bem';
+				else if($dado->orientacao == 'confuso')
+					$dado->orientacao = 'Confuso';
+				else
+					$dado->orientacao = 'Sonolento';
+
+				if($dado->apetite == 'bom')
+					$dado->apetite = 'Bom';
+				else if($dado->apetite == 'diminuido')
+					$dado->apetite = 'Diminuído';
+				else
+					$dado->apetite = 'Anoréxico';
+
+				if($dado->febre == 'ausente')
+					$dado->febre = 'Ausente';
+				else if($dado->febre == 'pico_baixo')
+					$dado->febre = 'Um Pico Baixo';
+				else
+					$dado->febre = 'Febre Persistente';
+
+				if($dado->tosse == 'ausente')
+					$dado->tosse = 'Ausente';
+				else if($dado->tosse == 'fala_sem_tossir')
+					$dado->tosse = 'Consegue Falar Sem Tossir';
+				else
+					$dado->tosse = 'Fala tossindo';
+
+				if($dado->falta_de_ar == 'ausente')
+					$dado->falta_de_ar = 'Ausente';
+				else if($dado->falta_de_ar == 'presente_ao_esforco')
+					$dado->falta_de_ar = 'Presente ao Esforço';
+				else
+					$dado->falta_de_ar = 'Intensa no Repouso';
+			}
+
+           	return $dados;
         }
         if($user->perfil=='municipal')
         {
-            return Atendimento::all();
+			$dados = Atendimento::all();
+
+			foreach($dados as $dado)
+			{
+				if($dado->orientacao_conduta == 'manter_isolamento_domiciliar')
+				{
+					$dado->orientacao_conduta = "Manter Isolamento Domiciliar";
+				}
+				else if($dado->orientacao_conduta == 'encaminhar_unidade_sintomatica')
+				{
+					$dado->orientacao_conduta = "Encaminhar paciente a uma unidade sintomática";
+				}
+				else
+				{
+					$dado->orientacao_conduta = "Encaminhar para o SAMU";
+				}
+
+				$dado->data_hora_ligacao = implode('/', array_reverse(explode('-', explode(' ', $dado->data_hora_ligacao)[0]))) . ' ' . explode(' ', $dado->data_hora_ligacao)[1];
+
+				if($dado->isolamento == 'sim')
+					$dado->isolamento = 'Sim';
+				else
+					$dado->isolamento = 'Não';
+
+				if($dado->orientacao == 'bem')
+					$dado->orientacao = 'Bem';
+				else if($dado->orientacao == 'confuso')
+					$dado->orientacao = 'Confuso';
+				else
+					$dado->orientacao = 'Sonolento';
+
+				if($dado->apetite == 'bom')
+					$dado->apetite = 'Bom';
+				else if($dado->apetite == 'diminuido')
+					$dado->apetite = 'Diminuído';
+				else
+					$dado->apetite = 'Anoréxico';
+
+				if($dado->febre == 'ausente')
+					$dado->febre = 'Ausente';
+				else if($dado->febre == 'pico_baixo')
+					$dado->febre = 'Um Pico Baixo';
+				else
+					$dado->febre = 'Febre Persistente';
+
+				if($dado->tosse == 'ausente')
+					$dado->tosse = 'Ausente';
+				else if($dado->tosse == 'fala_sem_tossir')
+					$dado->tosse = 'Consegue Falar Sem Tossir';
+				else
+					$dado->tosse = 'Fala tossindo';
+
+				if($dado->falta_de_ar == 'ausente')
+					$dado->falta_de_ar = 'Ausente';
+				else if($dado->falta_de_ar == 'presente_ao_esforco')
+					$dado->falta_de_ar = 'Presente ao Esforço';
+				else
+					$dado->falta_de_ar = 'Intensa no Repouso';
+			}
+			
+            return $dados;
         }
     }
     public function map($atendimento):array{
@@ -70,14 +190,14 @@ class AtendimentosExport implements FromCollection,
     public function headings():array{
         return[
             'Id',
-            'Data/hora ligação',
+            'Data/Hora Ligação',
             'Isolamento',
-            'Orientacao',
+            'Orientação',
             'Apetite',
             'Febre',
             'Tosse',
-            'Falta de ar',
-            'Orientacao_conduta'
+            'Falta de Ar',
+            'Orientação Conduta'
         ];
     }
     public function registerEvents():array{
