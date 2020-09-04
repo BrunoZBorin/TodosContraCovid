@@ -39,7 +39,7 @@
                     :error-messages="nomeErros"
                     label="Nome"
                     required
-                    :readonly="modoVisualizacao"
+                    :readonly="modo == 'visualizar'"
                     @input="$v.nome.$touch()"
                     @blur="$v.nome.$touch()"
                     dense
@@ -56,7 +56,7 @@
                   >
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field
-                        v-model="computedDataNascimentoFormatada"
+                        :value="computedDataNascimentoFormatada"
                         :error-messages="dataNascimentoErros"
                         label="Data de Nascimento"
                         prepend-icon="event"
@@ -66,10 +66,10 @@
                         @input="$v.dataNascimento.$touch()"
                         @blur="$v.dataNascimento.$touch()"
                         dense
-                        v-if="modoVisualizacao"
+                        v-if="modo == 'visualizar'"
                       ></v-text-field>
                       <v-text-field
-                        v-model="computedDataNascimentoFormatada"
+                        :value="computedDataNascimentoFormatada"
                         :error-messages="dataNascimentoErros"
                         label="Data de Nascimento"
                         prepend-icon="event"
@@ -99,7 +99,7 @@
                     label="CNS"
                     v-mask="'### #### #### ####'"
                     required
-                    :readonly="modoVisualizacao"
+                    :readonly="modo == 'visualizar'"
                     @input="$v.cns.$touch()"
                     @blur="$v.cns.$touch()"
                     dense
@@ -115,7 +115,7 @@
                     v-mask="'#####-###'"
                     :counter="9"
                     required
-                    :readonly="modoVisualizacao"
+                    :readonly="modo == 'visualizar'"
                     @input="$v.cep.$touch()"
                     @blur="$v.cep.$touch(), buscaEndereco()"
                     dense
@@ -180,9 +180,8 @@
                     v-model="numero"
                     :error-messages="numeroErros"
                     label="Numero"
-                    v-mask="'##########'"
                     required
-                    :readonly="modoVisualizacao"
+                    :readonly="modo == 'visualizar'"
                     @input="$v.numero.$touch()"
                     @blur="$v.numero.$touch()"
                     dense
@@ -201,7 +200,7 @@
                   >
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field
-                        v-model="computedDataPrimeiraAvaliacaoMedicaFormatada"
+                        :value="computedDataPrimeiraAvaliacaoMedicaFormatada"
                         label="Primeira Avaliação Médica"
                         prepend-icon="event"
                         readonly
@@ -211,11 +210,11 @@
                         @input="$v.dataPrimeiraAvaliacaoMedica.$touch()"
                         @blur="$v.dataPrimeiraAvaliacaoMedica.$touch()"
                         dense
-                        v-if="modoVisualizacao"
+                        v-if="modo == 'visualizar'"
                       ></v-text-field>
 
                       <v-text-field
-                        v-model="computedDataPrimeiraAvaliacaoMedicaFormatada"
+                        :value="computedDataPrimeiraAvaliacaoMedicaFormatada"
                         label="Primeira Avaliação Médica"
                         prepend-icon="event"
                         readonly
@@ -245,7 +244,7 @@
                     label="Telefone"
                     v-mask="'## #########'"
                     required
-                    :readonly="modoVisualizacao"
+                    :readonly="modo == 'visualizar'"
                     @input="$v.telefone.$touch()"
                     @blur="$v.telefone.$touch()"
                     dense
@@ -262,22 +261,24 @@
                   >
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field
-                        v-model="computedDataObitoFormatada"
+                        :value="computedDataObitoFormatada"
                         label="Óbito"
                         prepend-icon="event"
                         readonly
                         v-bind="attrs"
                         dense
-                        v-if="modoVisualizacao"
+                        v-if="modo == 'visualizar'"
                       ></v-text-field>
 
                       <v-text-field
-                        v-model="computedDataObitoFormatada"
+                        :value="computedDataObitoFormatada"
                         label="Óbito"
                         prepend-icon="event"
                         readonly
                         v-bind="attrs"
                         v-on="on"
+                        clearable
+                        @click:clear="dataObito = null"
                         dense
                         v-else
                       ></v-text-field>
@@ -304,7 +305,7 @@
                   >
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field
-                        v-model="computedDataInicioSintomasFormatada"
+                        :value="computedDataInicioSintomasFormatada"
                         label="Data de Início dos Sintomas"
                         prepend-icon="event"
                         readonly
@@ -314,11 +315,11 @@
                         @input="$v.dataInicioSintomas.$touch()"
                         @blur="$v.dataInicioSintomas.$touch()"
                         dense
-                        v-if="modoVisualizacao"
+                        v-if="modo == 'visualizar'"
                       ></v-text-field>
 
                       <v-text-field
-                        v-model="computedDataInicioSintomasFormatada"
+                        :value="computedDataInicioSintomasFormatada"
                         label="Data de Início dos Sintomas"
                         prepend-icon="event"
                         readonly
@@ -352,7 +353,7 @@
                   >
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field
-                        v-model="computedDataColetaExameFormatada"
+                        :value="computedDataColetaExameFormatada"
                         label="Data da Coleta do Exame"
                         prepend-icon="event"
                         readonly
@@ -362,11 +363,11 @@
                         @input="$v.dataColetaExame.$touch()"
                         @blur="$v.dataColetaExame.$touch()"
                         dense
-                        v-if="modoVisualizacao"
+                        v-if="modo == 'visualizar'"
                       ></v-text-field>
 
                       <v-text-field
-                        v-model="computedDataColetaExameFormatada"
+                        :value="computedDataColetaExameFormatada"
                         label="Data da Coleta do Exame"
                         prepend-icon="event"
                         readonly
@@ -427,7 +428,7 @@
                     item-text="nome"
                     item-value="id"
                     required
-                    :readonly="modoVisualizacao"
+                    :readonly="modo == 'visualizar'"
                     @change="$v.local.$touch()"
                     @blur="$v.local.$touch()"
                     dense
@@ -440,7 +441,7 @@
                     :error-messages="tipoConvenioErros"
                     label="Tipo de Convênio"
                     required
-                    :readonly="modoVisualizacao"
+                    :readonly="modo == 'visualizar'"
                     @change="$v.tipoConvenio.$touch()"
                     @blur="$v.tipoConvenio.$touch()"
                     dense
@@ -455,7 +456,7 @@
                     item-text="nome"
                     item-value="id"
                     required
-                    :readonly="modoVisualizacao"
+                    :readonly="modo == 'visualizar'"
                     @change="$v.unidadeReferencia.$touch()"
                     @blur="$v.unidadeReferencia.$touch()"
                     dense
@@ -470,7 +471,7 @@
                     :error-messages="tipoExameErros"
                     label="Tipo de Exame"
                     required
-                    :readonly="modoVisualizacao"
+                    :readonly="modo == 'visualizar'"
                     @change="$v.tipoExame.$touch()"
                     @blur="$v.tipoExame.$touch()"
                     dense
@@ -487,22 +488,24 @@
                   >
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field
-                        v-model="computedDataResultadoFormatada"
+                        :value="computedDataResultadoFormatada"
                         label="Data do Resultado"
                         prepend-icon="event"
                         readonly
                         v-bind="attrs"
                         dense
-                        v-if="modoVisualizacao"
+                        v-if="modo == 'visualizar'"
                       ></v-text-field>
 
                       <v-text-field
-                        v-model="computedDataResultadoFormatada"
+                        :value="computedDataResultadoFormatada"
                         label="Data do Resultado"
                         prepend-icon="event"
                         readonly
                         v-bind="attrs"
                         v-on="on"
+                        clearable
+                        @click:clear="dataResultado = null"
                         dense
                         v-else
                       ></v-text-field>
@@ -522,7 +525,7 @@
                     :error-messages="resultadoExameErros"
                     label="Resultado do Exame"
                     required
-                    :readonly="modoVisualizacao"
+                    :readonly="modo == 'visualizar'"
                     @change="$v.resultadoExame.$touch()"
                     @blur="$v.resultadoExame.$touch()"
                     dense
@@ -537,7 +540,7 @@
                     :error-messages="grupoRiscoErros"
                     label="Grupo de Risco"
                     required
-                    :readonly="modoVisualizacao"
+                    :readonly="modo == 'visualizar'"
                     @change="$v.grupoRisco.$touch()"
                     @blur="$v.grupoRisco.$touch()"
                     dense
@@ -579,7 +582,7 @@
                     label="Comorbidades"
                     item-text="nome"
                     item-value="id"
-                    :readonly="modoVisualizacao"
+                    :readonly="modo == 'visualizar'"
                     multiple
                     dense
                   ></v-select>
@@ -593,7 +596,7 @@
                     :error-messages="emIsolamentoErros"
                     label="Em Isolamento"
                     required
-                    :readonly="modoVisualizacao"
+                    :readonly="modo == 'visualizar'"
                     @change="$v.emIsolamento.$touch()"
                     @blur="$v.emIsolamento.$touch()"
                     dense
@@ -606,7 +609,7 @@
                     :error-messages="orientacaoErros"
                     label="Orientação"
                     required
-                    :readonly="modoVisualizacao"
+                    :readonly="modo == 'visualizar'"
                     @change="$v.orientacao.$touch()"
                     @blur="$v.orientacao.$touch()"
                     dense
@@ -619,7 +622,7 @@
                     :error-messages="apetiteErros"
                     label="Apetite"
                     required
-                    :readonly="modoVisualizacao"
+                    :readonly="modo == 'visualizar'"
                     @change="$v.apetite.$touch()"
                     @blur="$v.apetite.$touch()"
                     dense
@@ -634,7 +637,7 @@
                     label="Sinais"
                     item-text="nome"
                     item-value="id"
-                    :readonly="modoVisualizacao"
+                    :readonly="modo == 'visualizar'"
                     multiple
                     dense
                   ></v-select>
@@ -648,7 +651,7 @@
                     :error-messages="febreErros"
                     label="Febre"
                     required
-                    :readonly="modoVisualizacao"
+                    :readonly="modo == 'visualizar'"
                     @change="$v.febre.$touch()"
                     @blur="$v.febre.$touch()"
                     dense
@@ -661,7 +664,7 @@
                     :error-messages="tosseErros"
                     label="Tosse"
                     required
-                    :readonly="modoVisualizacao"
+                    :readonly="modo == 'visualizar'"
                     @change="$v.tosse.$touch()"
                     @blur="$v.tosse.$touch()"
                     dense
@@ -674,7 +677,7 @@
                     :error-messages="faltaArCansacoErros"
                     label="Falta de Ar/Cansaço"
                     required
-                    :readonly="modoVisualizacao"
+                    :readonly="modo == 'visualizar'"
                     @change="$v.faltaArCansaco.$touch()"
                     @blur="$v.faltaArCansaco.$touch()"
                     dense
@@ -701,7 +704,7 @@
                           ></v-divider>
                           <v-spacer></v-spacer>
                           <v-dialog v-model="dialog" max-width="500px">
-                            <template v-slot:activator="{ on, attrs }" v-if="!modoVisualizacao">
+                            <template v-slot:activator="{ on, attrs }" v-if="modo != 'visualizar'">
                               <v-btn
                                 color="success"
                                 dark
@@ -756,7 +759,7 @@
                           </v-dialog>
                         </v-toolbar>
                       </template>
-                      <template v-slot:item.actions="{ item }" v-if="!modoVisualizacao">
+                      <template v-slot:item.actions="{ item }" v-if="modo != 'visualizar'">
                         <v-icon
                           small
                           class="mr-2"
@@ -771,9 +774,6 @@
                           mdi-delete
                         </v-icon>
                       </template>
-                      <template v-slot:no-data v-if="!modoVisualizacao">
-                        <v-btn color="primary" @click="initialize">Resetar</v-btn>
-                      </template>
                     </v-data-table>
                   </template>
                 </v-col>
@@ -785,7 +785,7 @@
                     label="Observações Gerais"
                     :error-messages="observacaoGeralErros"
                     :counter="250"
-                    :readonly="modoVisualizacao"
+                    :readonly="modo == 'visualizar'"
                     @change="$v.observacaoGeral.$touch()"
                     @blur="$v.observacaoGeral.$touch()"
                     dense
@@ -793,17 +793,17 @@
                 </v-col>
               </v-row>
               <v-row>
-                <v-col cols="12" v-if="modoVisualizacao">
+                <v-col cols="12" v-if="modo == 'visualizar'">
                   <v-textarea
                     v-model="conduta"
                     label="Orientação / Conduta"
-                    :readonly="modoVisualizacao"
+                    :readonly="modo == 'visualizar'"
                     dense
                   ></v-textarea>
                 </v-col>
               </v-row>
 
-              <v-btn class="mr-4 mt-2" color="success" @click="registrar" v-if="!modoVisualizacao">Registrar</v-btn>
+              <v-btn class="mr-4 mt-2" color="success" @click="registrar" v-if="modo != 'visualizar'">Registrar</v-btn>
             </v-form>
           </v-container>
         </v-card>
@@ -946,21 +946,25 @@ export default {
     itensFaltaArCansaco: [{text: 'Ausente', value: 'ausente'}, {text: 'Presente ao Esforço', value: 'presente_ao_esforco'}, {text: 'Intensa no Repouso', value: 'intensa_no_repouso'}],
     itensSituacaoFamiliar: [{text: 'Sintomático', value: 'sintomatico'}, {text: 'Assintomático', value: 'assintomatico'}],
     itensExameFamiliar: [{text: 'Positivo', value: 'positivo'}, {text: 'Negativo', value: 'negativo'}, {text: 'Aguardando Resultado', value: 'aguardando_resultado'}],
-    modoVisualizacao: false
+    modo: 'registrar'
   }),
 
   async mounted() {
     this.idAtendimento = this.$route.params.id;
     this.idPaciente = this.$route.params.paciente_id;
 
-    if(this.idAtendimento > 0)
+    if(this.idAtendimento > 0 && this.idPaciente == 0)
     {
-      this.modoVisualizacao = true;
+      this.modo = 'visualizar';
+      this.carregaAtendimento();
+    }
+    else if(this.idAtendimento > 0 && this.idPaciente > 0)
+    {
       this.carregaAtendimento();
     }
     else if(this.idPaciente > 0)
     {
-      console.log(this.idPaciente);
+      this.carregaPaciente();
     }
 
     await this.carregaUnidadesReferencia();
@@ -1215,7 +1219,14 @@ export default {
           atendimento[1][0][i].id = atendimento[1][0][i].sinais_id;
         }
 
-        this.sinal = atendimento[1][0];
+        let sinais = [];
+
+        for(var sinal of atendimento[1][0])
+        {
+          sinais.push(sinal['id'])
+        }
+
+        this.sinal = sinais;
       },
 
       setPaciente(paciente){
@@ -1242,12 +1253,14 @@ export default {
         this.grupoRisco = paciente[0].grupo_risco;
         this.familiares = paciente[1];
 
-        for(var i in paciente[4])
+        let comorbidades = [];
+
+        for(var comorbidade of paciente[4])
         {
-          paciente[4][i].id = paciente[4][i].comorbidades_id;
+          comorbidades.push(comorbidade['comorbidades_id']);
         }
 
-        this.comorbidade = paciente[4];
+        this.comorbidade = comorbidades;
       },
 
       async carregaAtendimento(){
@@ -1259,6 +1272,12 @@ export default {
         })
         .catch((error) => {
           console.log(error);
+          this.$swal(
+            'Erro',
+            'Ocorreu um problema inesperado!',
+            'error'
+          );
+          return;
         })
       },
 
@@ -1274,6 +1293,12 @@ export default {
         })
         .catch((error) => {
           console.log(error);
+          this.$swal(
+            'Erro',
+            'Ocorreu um problema inesperado!',
+            'error'
+          );
+          return;
         })
       },
 
@@ -1288,6 +1313,12 @@ export default {
         })
         .catch((error) => {
           console.log(error);
+          this.$swal(
+            'Erro',
+            'Ocorreu um problema inesperado!',
+            'error'
+          );
+          return;
         })
       },
 
@@ -1298,6 +1329,12 @@ export default {
         })
         .catch((error) => {
           console.log(error);
+          this.$swal(
+            'Erro',
+            'Ocorreu um problema inesperado!',
+            'error'
+          );
+          return;
         })
       },
 
@@ -1308,6 +1345,12 @@ export default {
         })
         .catch((error) => {
           console.log(error);
+          this.$swal(
+            'Erro',
+            'Ocorreu um problema inesperado!',
+            'error'
+          );
+          return;
         })
       },
 
@@ -1318,6 +1361,12 @@ export default {
         })
         .catch((error) => {
           console.log(error);
+          this.$swal(
+            'Erro',
+            'Ocorreu um problema inesperado!',
+            'error'
+          );
+          return;
         })
       },
 
@@ -1336,6 +1385,12 @@ export default {
         })
         .catch((error) => {
           console.log(error);
+          this.$swal(
+            'Erro',
+            'Ocorreu um problema inesperado!',
+            'error'
+          );
+          return;
         })
 
         this.loadingEndereco = false;
@@ -1393,45 +1448,145 @@ export default {
           sinais: this.sinal
         }
 
-        await this.axios.post('/primeiro_cadastro', parametros )
-        .then((response) => {
-          if(response.status == 201)
-          {
-            if(response.data[1]['orientacao_conduta'] == 'manter_isolamento_domiciliar')
+        if(this.idAtendimento > 0 && this.idPaciente > 0)
+        {
+          await this.axios.put('/atendimentos/' + this.idAtendimento, parametros)
+          .then((response) => {
+            if(response.status == 200)
             {
-              this.conduta = "Manter Isolamento Domiciliar.";
-            }
-            else if(response.data[1]['orientacao_conduta'] == 'encaminhar_unidade_sintomatica')
-            {
-              this.conduta = "Encaminhar paciente a uma unidade sintomática.";
+              if(response.data['original'][0]['orientacao_conduta'] == 'manter_isolamento_domiciliar')
+              {
+                this.conduta = "Manter Isolamento Domiciliar.";
+              }
+              else if(response.data['original'][0]['orientacao_conduta'] == 'encaminhar_unidade_sintomatica')
+              {
+                this.conduta = "Encaminhar paciente a uma unidade sintomática.";
+              }
+              else
+              {
+                this.conduta = "Encaminhar para o SAMU";
+              }
+
+              this.$swal(
+                'Criado!',
+                'Operação realizada com sucesso!',
+                'success'
+              )
+
+              this.dialogConduta = true;
             }
             else
-            {
-              this.conduta = "Encaminhar para o SAMU";
-            }
-
+              this.$swal(
+                'Erro',
+                'Ocorreu um problema inesperado!',
+                'error'
+              );
+              return;
+          })
+          .catch((error) => {
+            console.log(error);
             this.$swal(
-              'Criado!',
-              'Operação realizada com sucesso!',
-              'success'
-            )
+              'Erro',
+              'Ocorreu um problema inesperado!',
+              'error'
+            );
+            return;
+          })
+        }
+        else if(this.idPaciente > 0)
+        {
+          await this.axios.post('/atendimento_create_paciente_update', parametros)
+          .then((response) => {
+            if(response.status == 200)
+            {
+              if(response.data['original'][0]['orientacao_conduta'] == 'manter_isolamento_domiciliar')
+              {
+                this.conduta = "Manter Isolamento Domiciliar.";
+              }
+              else if(response.data['original'][0]['orientacao_conduta'] == 'encaminhar_unidade_sintomatica')
+              {
+                this.conduta = "Encaminhar paciente a uma unidade sintomática.";
+              }
+              else
+              {
+                this.conduta = "Encaminhar para o SAMU";
+              }
 
-            this.dialogConduta = true;
-          }
-          else
-            alert("Erro ao registrar atendimento!")
-        })
-        .catch((error) => {
-          console.log(error);
-        })
-      },
+              this.$swal(
+                'Criado!',
+                'Operação realizada com sucesso!',
+                'success'
+              )
 
-      initialize () {
-        this.familiares = [];
+              this.dialogConduta = true;
+            }
+            else
+              this.$swal(
+                'Erro',
+                'Ocorreu um problema inesperado!',
+                'error'
+              );
+              return;
+          })
+          .catch((error) => {
+            console.log(error);
+            this.$swal(
+              'Erro',
+              'Ocorreu um problema inesperado!',
+              'error'
+            );
+            return;
+          })
+        }
+        else
+        {
+          await this.axios.post('/primeiro_cadastro', parametros)
+          .then((response) => {
+            if(response.status == 201)
+            {
+              if(response.data[1]['orientacao_conduta'] == 'manter_isolamento_domiciliar')
+              {
+                this.conduta = "Manter Isolamento Domiciliar.";
+              }
+              else if(response.data[1]['orientacao_conduta'] == 'encaminhar_unidade_sintomatica')
+              {
+                this.conduta = "Encaminhar paciente a uma unidade sintomática.";
+              }
+              else
+              {
+                this.conduta = "Encaminhar para o SAMU";
+              }
+
+              this.$swal(
+                'Criado!',
+                'Operação realizada com sucesso!',
+                'success'
+              )
+
+              this.dialogConduta = true;
+            }
+            else
+              this.$swal(
+                'Erro',
+                'Ocorreu um problema inesperado!',
+                'error'
+              );
+              return;
+          })
+          .catch((error) => {
+            console.log(error);
+            this.$swal(
+              'Erro',
+              'Ocorreu um problema inesperado!',
+              'error'
+            );
+            return;
+          })
+        }
       },
 
       editItem (item) {
-        this.editedIndex = this.familiares.indexOf(item)
+        this.editedIndex = this.familiares.indexOf(item);
 
         this.nomeFamiliar = this.familiares[this.editedIndex].nome;
         this.situacaoFamiliar = this.familiares[this.editedIndex].sintomatico;
@@ -1440,9 +1595,22 @@ export default {
         this.dialog = true
       },
 
-      deleteItem (item) {
-        const index = this.familiares.indexOf(item)
-        confirm('Você tem certeza que deseja excluir este familiar?') && this.familiares.splice(index, 1)
+      async deleteItem (item) {
+        const index = this.familiares.indexOf(item);
+
+        const result = await this.$swal({
+          title: 'Você tem certeza que deseja excluir este familiar?',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Sim',
+          cancelButtonText: 'Não'
+        });
+
+        if (!result.value) return;
+        
+        this.familiares.splice(index, 1);
       },
 
       close () {

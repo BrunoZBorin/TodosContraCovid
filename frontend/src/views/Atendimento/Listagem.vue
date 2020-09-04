@@ -23,6 +23,13 @@
         <template v-slot:item.actions="{ item }">
           <v-icon
             small
+            class="mr-2"
+            @click="editarAtendimento(item)"
+          >
+            mdi-pencil
+          </v-icon>
+          <v-icon
+            small
             class="ml-2"
             text="teste"
             @click="abrirAtendimento(item)"
@@ -59,10 +66,6 @@
     },
 
     methods: {
-      formataConduta(val)
-      {
-        return 'teste'
-      },
       async getAtendimentos() {
         this.loading = true;
 
@@ -94,6 +97,10 @@
       },
 
       abrirAtendimento(item) {
+        this.$router.push('/atendimento/cadastro/' + item.id + '/0');
+      },
+
+      editarAtendimento(item) {
         this.$router.push('/atendimento/cadastro/' + item.id + '/' + item.paciente_id);
       },
     }
