@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\UserFormRequest;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -18,7 +19,10 @@ class UserController extends Controller
      */
     public function index()
     {
-        $usuario = User::all();
+        $usuario = DB::table('users')
+                    ->join('unidade_saudes', 'users.unidade_saude_id','=', 'unidade_saudes.id')
+                    ->select( 'users.*','unidade_saudes.nome as unidade_nome')
+                    ->get();
         return response()->json($usuario, 200);
     }
 
@@ -51,6 +55,8 @@ class UserController extends Controller
     public function show($id)
     {
         $usuario = User::findOrFail($id);
+        return response()->json($usuario, 200);
+
     }
 
     /**
