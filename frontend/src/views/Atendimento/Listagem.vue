@@ -69,7 +69,7 @@
       async getAtendimentos() {
         this.loading = true;
 
-        const response = await this.axios.get('atendimentos/' + this.$store.getters.getDadosUser.id);
+        const response = await this.axios.get('index_atendimentos/' + this.$store.getters.getDadosUser.id);
         this.loading = false;
 
         for(var atendimento of response.data)
