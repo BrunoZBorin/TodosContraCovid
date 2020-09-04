@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Atendimento;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithMapping;
@@ -17,13 +18,41 @@ class AtendimentosExport implements FromCollection,
  WithHeadings,
  WithEvents
 {
+    protected $id;
+
+    function __construct($id) {
+            $this->id = $id;
+    }
+
     use Exportable;
     /**
     * @return \Illuminate\Support\Collection
     */
     public function collection()
     {
-        return Atendimento::all();
+        $user = DB::table('users')
+            ->where('users.id',$this->id)
+            ->select('users.*')
+            ->first();
+        $unidade_saude_id = $user->unidade_saude_id;
+        
+        $usuarios = DB::table('users')
+            ->where('users.unidade_saude_id', $unidade_saude_id)
+            ->select('users.id')
+            ->get();
+            $usuarios_id=[];
+         foreach($usuarios as $users){
+             $usuarios_id[] = $users->id;
+         }
+         
+        if($user->perfil=='monitoramento')
+        {
+           return Atendimento::whereIn('usuario_id', $usuarios_id)->get();
+        }
+        if($user->perfil=='municipal')
+        {
+            return Atendimento::all();
+        }
     }
     public function map($atendimento):array{
         return[

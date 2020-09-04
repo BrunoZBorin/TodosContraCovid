@@ -31,10 +31,10 @@ Route::post('/primeiro_cadastro', 'API\PacienteController@primeiro_cadastro');
 Route::get('/cep', 'API\PacienteController@cep');
 Route::post('/register', 'API\AuthController@register');
 Route::post('/login', 'API\AuthController@login');
-Route::get('/pacientes_export_excel', 'API\PacienteController@export_excel');
-Route::get('/pacientes_export_pdf', 'API\PacienteController@export_pdf');
-Route::get('/atendimentos_export_excel', 'API\AtendimentoController@export_excel');
-Route::get('/atendimentos_export_pdf', 'API\AtendimentoController@export_pdf');
+Route::get('/pacientes_export_excel/{id}', 'API\PacienteController@export_excel');
+Route::get('/pacientes_export_pdf/{id}', 'API\PacienteController@export_pdf');
+Route::get('/atendimentos_export_excel/{id}', 'API\AtendimentoController@export_excel');
+Route::get('/atendimentos_export_pdf/{id}', 'API\AtendimentoController@export_pdf');
 //Graficos
 Route::get('/atendimentos_por_data', 'API\AtendimentoController@atendimentos_por_data');
 Route::get('/pacientes_obitos', 'API\PacienteController@obitos');

@@ -347,13 +347,13 @@ class AtendimentoController extends Controller
         return response()->json([], 200);
     }
 
-    public function export_excel() 
+    public function export_excel($id) 
     {
-        return $this->excel->download(new AtendimentosExport, 'atendimentos.xlsx');
+        return $this->excel->download(new AtendimentosExport($id), 'atendimentos.xlsx');
     }
-    public function export_pdf() 
+    public function export_pdf($id) 
     {
-        return $this->excel->download(new AtendimentosExport, 'atendimentos.pdf', Excel::DOMPDF);
+        return $this->excel->download(new AtendimentosExport($id), 'atendimentos.pdf', Excel::DOMPDF);
     }
 
     public function store_atendimento_update_paciente(Request $request){
@@ -455,6 +455,18 @@ class AtendimentoController extends Controller
             $paciente->grupo_risco = $request->paciente_grupo_risco;
             $paciente->save();
             
+
+
+            $atendimento_sinais[] = DB::table('atendimento_sinais')
+            ->where('atendimento_sinais.atendimento_id',$atendimento->id)
+            ->get();
+                if(isset($atendimento_sinais)){
+                foreach($atendimento_sinais[0] as $pc){
+                    $p_c = AtendimentoSinais::findOrFail($pc->id);
+                    $p_c->delete();
+                }
+            }
+            $atendimento_sinais=[];
             
             $sinais = $request->sinais;
             
