@@ -47,7 +47,7 @@
           { text: 'Telefone', value: 'telefone' },
           { text: 'E-mail', value: 'email' },
           { text: 'Perfil', value: 'perfil' },
-          { text: 'Unidade de Saúde', value: 'unidade_saude_id' },
+          { text: 'Unidade de Saúde', value: 'unidade_nome' },
           { text: 'Ações', value: 'actions', sortable: false },
         ],
         items: [],

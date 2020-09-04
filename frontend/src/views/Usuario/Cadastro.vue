@@ -168,6 +168,8 @@ export default {
       this.telefone = telefone;
       this.perfil = String(perfil).toUpperCase();
       this.unidade_saude = unidade_saude_id;
+
+      this.$v.$touch();
     },
 
     async registrar() {
@@ -207,12 +209,33 @@ export default {
         this.$router.push('/home');
       })
       .catch(error => {
-        console.log(error);
-        this.$swal(
-          'Erro',
-          'Ocorreu um problema inesperado!',
-          'error'
-        );
+        console.log(error.response.data);
+
+        const { response: { data: { errors } } } = error;
+
+        if(!errors) {
+          this.$swal(
+            'Erro',
+            'Ocorreu um problema inesperado!',
+            'error'
+          );
+          return;
+        }
+
+        let html = '<div style="text-align: left;">';
+
+        Object.keys(errors).map(campo => {
+          html += errors[campo][0] + '<br/>';
+        });
+
+        html += '</div>';
+
+        this.$swal({
+          html,
+          title: 'Atenção',
+          icon: 'warning'
+        });
+
         return;
       });
     }

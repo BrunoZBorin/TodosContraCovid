@@ -21,12 +21,14 @@
                 color="success"
                 @click="gerarExcel"
               >
+                <v-icon>description</v-icon>
                 Gerar Excel
               </v-btn>
               <v-btn
                 color="error"
                 @click="gerarPdf"
               >
+                <v-icon>picture_as_pdf</v-icon>
                 Gerar Pdf
               </v-btn>
             </v-card-actions>
