@@ -1544,11 +1544,11 @@ export default {
           .then((response) => {
             if(response.status == 201)
             {
-              if(response.data[1]['orientacao_conduta'] == 'manter_isolamento_domiciliar')
+              if(response.data['original'][1]['orientacao_conduta'] == 'manter_isolamento_domiciliar')
               {
                 this.conduta = "Manter Isolamento Domiciliar.";
               }
-              else if(response.data[1]['orientacao_conduta'] == 'encaminhar_unidade_sintomatica')
+              else if(response.data['original'][1]['orientacao_conduta'] == 'encaminhar_unidade_sintomatica')
               {
                 this.conduta = "Encaminhar paciente a uma unidade sintomática.";
               }
