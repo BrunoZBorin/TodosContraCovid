@@ -49,3 +49,5 @@ Route::get('/listagem_diaria/{id}', 'API\AtendimentoController@listagem_diaria')
 Route::get('/show_sinais_familiares/{id}', 'API\PacienteController@show_sinais_familiares');
 Route::get('/show_atendimento_sinais/{id}', 'API\AtendimentoController@show_atendimento_sinais');
 Route::post('/atendimento_create_paciente_update', 'API\AtendimentoController@store_atendimento_update_paciente');
+Route::post('/usuario_is_admin/{id}', 'API\UserController@is_admin');
+Route::post('/usuario_is_not_admin/{id}', 'API\UserController@is_not_admin');
