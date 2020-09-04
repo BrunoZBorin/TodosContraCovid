@@ -247,27 +247,6 @@ class AtendimentoController extends Controller
                 }
             }
         
-            /**$paciente_comorbidades[] = DB::table('paciente_comorbidades')
-            ->where('paciente_comorbidades.paciente_id',$paciente->id)
-            ->get();
-                if(isset($paciente_comorbidades)){
-                foreach($paciente_comorbidades[0] as $pc){
-                    $p_c = PacienteComorbidades::findOrFail($pc->id);
-                    $p_c->delete();
-                }
-            }
-            $paciente_comorbidades=[];
-            $comorbidades = $request->comorbidades;
-                if(isset($comorbidades)){
-                foreach($comorbidades as $key=> $c){
-                    $p_c = PacienteComorbidades::create([
-                        'paciente_id' => $paciente->id,
-                        'comorbidades_id' => $c
-                    ]);
-                    $paciente_comorbidades[] = $p_c;
-                }
-            } */
-        
             
             $p = DB::table('pacientes')
                 ->where('pacientes.id', $request->atendimento_paciente_id)
@@ -565,7 +544,7 @@ class AtendimentoController extends Controller
     }
 
     public function listagem_diaria(){
-        $hoje = Carbon::now();
+        $hoje = Carbon::now()->startOfDay();
         $datas_nao_risco = [];
         $idoso = Carbon::now()->subYears(60);
         
@@ -609,25 +588,25 @@ class AtendimentoController extends Controller
             }
         }
         
+        $atendidos_ontem = DB::table('atendimentos')
+                        ->whereDate('atendimentos.data_hora_ligacao', $hoje->subDay(1))
+                        ->select('atendimentos.*')
+                        ->get();
+
+        $id_atendimentos_ontem=[];
+        for($i=0; $i<count($atendidos_ontem); $i++){
+            $id_atendimentos_ontem[]=$atendidos_ontem[$i]->paciente_id;
+        }
+        
         $nao_risco=[];
         foreach($grupo_nao_risco as $gnp){
-            if (in_array($gnp->id, $id_atendimentos)) { 
+            if (in_array($gnp->id, $id_atendimentos)||in_array($gnp->id, $id_atendimentos_ontem)) { 
                 
             }else{
                 $nao_risco[]=$gnp;
             }
         }
-        $g_nao_risco = [];
-        foreach($nao_risco as $nr){
-            $date = new Carbon($nr->isolamento_ate);
-            $array_datas=[$data1 = $date->subDays(2), $data2 = $date->subDays(4), $data3 = $date->subDays(6), $data4 = $date->subDays(8), $data5 = $date->subDays(10), $data6 = $date->subDays(12)]; 
-            if(in_array($hoje, $array_datas)){
-                $g_nao_risco[]=$nr;
-            }
-            
-        }
-        
-        return response()->json([$risco, $nao_risco], 200);
+        return response()->json([$nao_risco, $risco], 200);
         
     }
     
