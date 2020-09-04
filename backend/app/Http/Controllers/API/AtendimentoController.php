@@ -543,9 +543,15 @@ class AtendimentoController extends Controller
         
     }
 
-    public function listagem_diaria(){
+    public function listagem_diaria($id){
+        $user = DB::table('users')
+                    ->where('users.id',$id)
+                    ->select('users.unidade_saude_id')
+                    ->first();
+        $usuario =$user->unidade_saude_id;
+        
         $hoje = Carbon::now()->startOfDay();
-        $datas_nao_risco = [];
+    
         $idoso = Carbon::now()->subYears(60);
         
         $idosos = DB::table('pacientes')
@@ -557,9 +563,10 @@ class AtendimentoController extends Controller
                         ->whereNull('paciente_comorbidades.comorbidades_id')
                         ->where('pacientes.isolamento_ate','>',$hoje)
                         ->where('pacientes.data_nasc','>', $idoso)
+                        ->where('pacientes.unidade_saude_id', $usuario)
                         ->select('pacientes.*')
                         ->get();
-        
+                        
         $grupo_risco = DB::table('pacientes')
                         ->join('paciente_comorbidades', 'pacientes.id', '=', 'paciente_comorbidades.paciente_id')
                         ->whereNotNull('paciente_comorbidades.comorbidades_id')
@@ -573,6 +580,7 @@ class AtendimentoController extends Controller
                         ->select('atendimentos.*')
                         ->get();
 
+        
         $id_atendimentos = [];
         
         for($i=0; $i<count($atendidos); $i++){
@@ -581,13 +589,13 @@ class AtendimentoController extends Controller
 
         $risco=[];
         foreach($grupo_risco as $gr){
-            if (in_array($gr->id, $id_atendimentos)) { 
+            if (in_array($gr->id, $id_atendimentos)||$gr->unidade_saude_id != $usuario) { 
                 
             }else{
                 $risco[]=$gr;
             }
         }
-        
+
         $atendidos_ontem = DB::table('atendimentos')
                         ->whereDate('atendimentos.data_hora_ligacao', $hoje->subDay(1))
                         ->select('atendimentos.*')
