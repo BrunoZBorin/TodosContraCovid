@@ -92,7 +92,7 @@
 				snackText: '',
 				valid: true,
 				email: '',
-                EmailRules: [ v => /.+@.+/.test(v) || 'E-mail é obrigatório' ],
+                EmailRules: [ v => !v || /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'E-mail é obrigatório' ],
 				password: '',
 				passwordRules: [v => !!v || 'Senha é obrigatório']
 			}
