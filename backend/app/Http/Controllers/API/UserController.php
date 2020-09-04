@@ -79,4 +79,18 @@ class UserController extends Controller
         $usuario = User::findOrFail($id);
         $usuario->delete();
     }
+
+    public function is_admin($id){
+        $usuario = User::findOrFail($id);
+        $usuario->admin = true;
+        $usuario->save();
+        return response()->json($usuario);
+    }
+
+    public function is_not_admin($id){
+        $usuario = User::findOrFail($id);
+        $usuario->admin = false;
+        $usuario->save();
+        return response()->json($usuario);
+    }
 }
