@@ -142,6 +142,7 @@
     validations: {
       nome: { required },
       cep: { required, minLength: minLength(9), maxLength: maxLength(9)  },
+      cns: { required },
       cidade: { required },
       uf: { required },
       bairro: { required },
@@ -187,7 +188,18 @@
           );
         });
         
-        console.log(response.data);
+        const { nome, cep, cidade, estado, bairro, logradouro, numero, telefone } = response.data;
+
+        this.nome = nome;
+        this.cep = cep;
+        this.cidade = cidade;
+        this.uf = estado;
+        this.bairro = bairro;
+        this.logradouro = logradouro;
+        this.numero = numero;
+        this.telefone = telefone;
+
+        this.$v.$touch();
       },
 
       async buscaEndereco(){
@@ -252,12 +264,33 @@
           this.$router.push('/home');
         })
         .catch(error => {
-          console.log(error);
-          this.$swal(
-            'Erro',
-            'Ocorreu um problema inesperado!',
-            'error'
-          );
+          console.log(error.response.data);
+
+          const { response: { data: { errors } } } = error;
+
+          if(!errors) {
+            this.$swal(
+              'Erro',
+              'Ocorreu um problema inesperado!',
+              'error'
+            );
+            return;
+          }
+
+          let html = '<div style="text-align: left;">';
+
+          Object.keys(errors).map(campo => {
+            html += errors[campo][0] + '<br/>';
+          });
+
+          html += '</div>';
+
+          this.$swal({
+            html,
+            title: 'Atenção',
+            icon: 'warning'
+          });
+
           return;
         });
       }

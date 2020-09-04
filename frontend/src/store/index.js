@@ -15,9 +15,9 @@ export default new Vuex.Store({
       return new Promise((resolve, reject) => {
         Vue.axios.post("login", dadosLogin)
         .then(response => {
-          const { access_token, user: { id, nome, perfil, unidade_saude_id } } = response.data;
+          const { access_token, user: { id, nome, perfil, unidade_saude_id, admin, unidade_nome } } = response.data;
           
-          state.dadosUser = { id, nome, perfil, unidade_saude_id };
+          state.dadosUser = { id, nome, perfil, unidade_saude_id, admin, unidade_nome };
 
           Vue.axios.defaults.headers.common['Authorization'] = access_token;
           state.token = access_token;

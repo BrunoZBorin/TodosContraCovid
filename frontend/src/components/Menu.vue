@@ -56,7 +56,8 @@
           <v-list-group
             active-class="primary--text text--accent-4"
             no-action
-            v-if="this.$store.getters.getDadosUser.perfil == 'monitoramento'"
+            v-if="this.$store.getters.getDadosUser.perfil == 'monitoramento' ||
+                  this.$store.getters.getDadosUser.admin > 0"
           >
             <template v-slot:activator>
               <v-list-item>
@@ -77,7 +78,8 @@
           <v-list-group
             active-class="primary--text text--accent-4"
             no-action
-            v-if="this.$store.getters.getDadosUser.perfil == 'monitoramento'"
+            v-if="this.$store.getters.getDadosUser.perfil == 'monitoramento' ||
+                  this.$store.getters.getDadosUser.admin > 0"
           >
             <template v-slot:activator>
               <v-list-item>
@@ -98,7 +100,8 @@
           <v-list-group
             active-class="primary--text text--accent-4"
             no-action
-            v-if="this.$store.getters.getDadosUser.perfil == 'monitoramento'"
+            v-if="this.$store.getters.getDadosUser.perfil == 'monitoramento' ||
+                  this.$store.getters.getDadosUser.admin > 0"
           >
             <template v-slot:activator>
               <v-list-item>
