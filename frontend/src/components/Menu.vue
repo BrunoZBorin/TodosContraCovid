@@ -35,6 +35,7 @@
           <v-list-group
             active-class="primary--text text--accent-4"
             no-action
+            v-if="this.$store.getters.getDadosUser.perfil == 'monitoramento'"
           >
             <template v-slot:activator>
               <v-list-item>
@@ -55,6 +56,7 @@
           <v-list-group
             active-class="primary--text text--accent-4"
             no-action
+            v-if="this.$store.getters.getDadosUser.perfil == 'monitoramento'"
           >
             <template v-slot:activator>
               <v-list-item>
@@ -75,6 +77,7 @@
           <v-list-group
             active-class="primary--text text--accent-4"
             no-action
+            v-if="this.$store.getters.getDadosUser.perfil == 'monitoramento'"
           >
             <template v-slot:activator>
               <v-list-item>
@@ -95,6 +98,7 @@
           <v-list-group
             active-class="primary--text text--accent-4"
             no-action
+            v-if="this.$store.getters.getDadosUser.perfil == 'monitoramento'"
           >
             <template v-slot:activator>
               <v-list-item>
@@ -109,6 +113,26 @@
             </v-list-item>
             <v-list-item to="/unidades_sintomaticas/cadastro/0">
               <v-list-item-title>Cadastro</v-list-item-title>
+            </v-list-item>
+          </v-list-group>
+
+          <v-list-group
+            active-class="primary--text text--accent-4"
+            no-action
+          >
+            <template v-slot:activator>
+              <v-list-item>
+                <v-list-item-icon>
+                  <v-icon>mdi-file</v-icon>
+                </v-list-item-icon>
+                <v-list-item-title>Relatório</v-list-item-title>
+              </v-list-item>
+            </template>
+            <v-list-item to="/relatorio/atendimento">
+              <v-list-item-title>Atendimento</v-list-item-title>
+            </v-list-item>
+            <v-list-item to="/relatorio/paciente">
+              <v-list-item-title>Paciente</v-list-item-title>
             </v-list-item>
           </v-list-group>
 

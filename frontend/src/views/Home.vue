@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="this.$store.getters.getDadosUser.perfil == 'monitoramento'">
     <v-card>
       <v-card-title class="headline">
         Listagem de Ligações Diárias
@@ -31,6 +31,17 @@
           </v-icon>
         </template>
       </v-data-table>
+    </v-card>
+  </div>
+  <div v-else>
+    <v-card>
+      <v-container class="fill-height" fluid >
+        <img 
+            src="../assets/antcovid.png" 
+            alt="Todos Contra Covid!" 
+            width="50%"
+            class="mx-auto">
+      </v-container>
     </v-card>
   </div>
 </template>
