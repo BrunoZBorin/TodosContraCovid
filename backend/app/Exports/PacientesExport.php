@@ -37,11 +37,57 @@ WithEvents
         $usuario =$user->unidade_saude_id;
         if($user->perfil=='monitoramento')
         {
-            return Paciente::where('unidade_saude_id', $usuario)->get();
+            $dados = Paciente::where('unidade_saude_id', $usuario)->get();
+
+            foreach($dados as $dado)
+            {
+                $dado->data_nasc = implode('/', array_reverse(explode('-', explode(' ', $dado->data_nasc)[0])));
+
+                if($dado->resultado_exame == 'positivo')
+                {
+                    $dado->resultado_exame = 'Positivo';
+                }
+                else if($dado->resultado_exame == 'negativo')
+                {
+                    $dado->resultado_exame = 'Negativo';
+                }
+                else
+                {
+                    $dado->resultado_exame = 'Aguardando Resultado';
+                }
+
+                if($dado->convenio == 'particular')
+                    $dado->convenio = 'Particular';
+            }
+
+            return $dados;
         }
         if($user->perfil=='municipal')
         {
-            return Paciente::all(   );
+            $dados = Paciente::all(   );
+
+            foreach($dados as $dado)
+            {
+                $dado->data_nasc = implode('/', array_reverse(explode('-', explode(' ', $dado->data_nasc)[0])));
+
+                if($dado->resultado_exame == 'positivo')
+                {
+                    $dado->resultado_exame = 'Positivo';
+                }
+                else if($dado->resultado_exame == 'negativo')
+                {
+                    $dado->resultado_exame = 'Negativo';
+                }
+                else
+                {
+                    $dado->resultado_exame = 'Aguardando Resultado';
+                }
+
+                if($dado->convenio == 'particular')
+                    $dado->convenio = 'Particular';
+            }
+            
+            return $dados;
         }
         
     }
@@ -62,7 +108,7 @@ WithEvents
             'CNS',
             'Resultado Exame',
             'Telefone',
-            'Convenio',
+            'Convênio',
         ];
     }
     public function registerEvents():array{
