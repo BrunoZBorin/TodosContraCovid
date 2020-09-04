@@ -36,6 +36,34 @@ class AtendimentoController extends Controller
         return response()->json($atendimento, 200);
     }
 
+    public function index_atendimentos($id)
+    {
+        $user = DB::table('users')
+            ->where('users.id',$id)
+            ->select('users.*')
+            ->first();
+        $unidade_saude_id = $user->unidade_saude_id;
+        
+        $usuarios = DB::table('users')
+            ->where('users.unidade_saude_id', $unidade_saude_id)
+            ->select('users.id')
+            ->get();
+            $usuarios_id=[];
+         foreach($usuarios as $users){
+             $usuarios_id[] = $users->id;
+         }
+         
+        if($user->perfil=='monitoramento')
+        {
+            $atendimentos = Atendimento::whereIn('usuario_id', $usuarios_id)->get();
+        }
+        if($user->perfil=='municipal')
+        {
+            $atendimentos = Atendimento::all();
+        }
+        return response()->json($atendimentos, 200);
+    }
+
     /**
      * Store a newly created resource in storage.
      *

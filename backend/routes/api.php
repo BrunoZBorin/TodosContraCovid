@@ -35,6 +35,7 @@ Route::get('/pacientes_export_excel/{id}', 'API\PacienteController@export_excel'
 Route::get('/pacientes_export_pdf/{id}', 'API\PacienteController@export_pdf');
 Route::get('/atendimentos_export_excel/{id}', 'API\AtendimentoController@export_excel');
 Route::get('/atendimentos_export_pdf/{id}', 'API\AtendimentoController@export_pdf');
+Route::get('/index_atendimentos/{id}', 'API\AtendimentoController@index_atendimentos');
 //Graficos
 Route::get('/atendimentos_por_data', 'API\AtendimentoController@atendimentos_por_data');
 Route::get('/pacientes_obitos', 'API\PacienteController@obitos');
