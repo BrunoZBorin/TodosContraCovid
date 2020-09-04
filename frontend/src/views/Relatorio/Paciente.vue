@@ -52,7 +52,7 @@
     methods: {
       async gerarExcel()
       {
-        const response = await this.axios.get('pacientes_export_excel', {responseType: 'blob'});
+        const response = await this.axios.get('pacientes_export_excel/' + this.$store.getters.getDadosUser.id, {responseType: 'blob'});
 
         var fileURL = window.URL.createObjectURL(new Blob([response.data]));
 
@@ -69,7 +69,7 @@
 
       async gerarPdf()
       {
-        const response = await this.axios.get('pacientes_export_pdf', {responseType: 'blob'});
+        const response = await this.axios.get('pacientes_export_pdf/' + this.$store.getters.getDadosUser.id, {responseType: 'blob'});
         
         var fileURL = window.URL.createObjectURL(new Blob([response.data], {type: 'application/pdf'}));
 

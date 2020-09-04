@@ -898,11 +898,11 @@ export default {
     grupoRisco: '',
     dataLigacao: new Date().toLocaleString("pt-BR", {timeZone: "America/Sao_Paulo"}).slice(0, 10),
     horaLigacao: new Date().toLocaleString("pt-BR", {timeZone: "America/Sao_Paulo"}).slice(11),
-    comorbidade: '',
+    comorbidade: [],
     emIsolamento: '',
     orientacao: '',
     apetite: '',
-    sinal: '',
+    sinal: [],
     febre: '',
     tosse: '',
     faltaArCansaco: '',
@@ -1468,7 +1468,7 @@ export default {
               }
 
               this.$swal(
-                'Criado!',
+                'Editado!',
                 'Operação realizada com sucesso!',
                 'success'
               )

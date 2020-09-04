@@ -70,10 +70,10 @@
 				async getLigacao() {
 					this.loading = true;
 
-					const response = await this.axios.get('pacientes');
-					this.loading = false;
-
-					this.items = response.data;
+					const response = await this.axios.get('listagem_diaria/' + this.$store.getters.getDadosUser.id);
+          this.loading = false;
+          
+          this.items = response.data[0].concat(response.data[1]);
 				},
 
 				incluirAtendimento(item) {
