@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Paciente;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithMapping;
@@ -17,13 +18,32 @@ WithMapping,
 WithHeadings,
 WithEvents
 {
+    protected $id;
+
+    function __construct($id) {
+            $this->id = $id;
+    }
+
     use Exportable;
     /**
     * @return \Illuminate\Support\Collection
     */
     public function collection()
     {
-        return Paciente::all();
+        $user = DB::table('users')
+                    ->where('users.id',$this->id)
+                    ->select('users.*')
+                    ->first();
+        $usuario =$user->unidade_saude_id;
+        if($user->perfil=='monitoramento')
+        {
+            return Paciente::where('unidade_saude_id', $usuario)->get();
+        }
+        if($user->perfil=='municipal')
+        {
+            return Paciente::all(   );
+        }
+        
     }
     public function map($paciente):array{
         return[

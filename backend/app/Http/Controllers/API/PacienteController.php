@@ -135,142 +135,145 @@ class PacienteController extends Controller
 
     public function primeiro_cadastro(Request $request)
     {
-        $endereco = \Correios::cep($request->paciente_cep);
-        $paciente = new Paciente();
-        if(empty($endereco)) {
-            return response("Endereço não encontrado.", 500);
-        }
+        $createAtendimento = DB::transaction(function() use ($request) {
+            $endereco = \Correios::cep($request->paciente_cep);
+            $paciente = new Paciente();
+            if(empty($endereco)) {
+                return response("Endereço não encontrado.", 500);
+            }
 
-        $paciente = Paciente::create([
-            'logradouro' => $endereco['logradouro'],
-            'bairro' => $endereco['bairro'],
-            'cidade' => $endereco['cidade'],
-            'estado' => $endereco['uf'],
-            'nome' => $request->paciente_nome,
-            'cep' => $request->paciente_cep,
-            'numero' => $request->paciente_numero,
-            'telefone' => $request->paciente_telefone,
-            'cns' => $request->paciente_cns,
-            'data_nasc' => $request->paciente_data_nasc,
-            'obito' => $request->paciente_obito,
-            'primeira_avaliacao_medica' => $request->paciente_primeira_avaliacao_medica,
-            'isolamento_ate' => $request->paciente_isolamento_ate,
-            'data_inicio_sintomas' => $request->paciente_data_inicio_sintomas,
-            'data_coleta_exames' => $request->paciente_data_coleta_exames,
-            'unidade_sintomatica_id' => $request->paciente_unidade_sintomatica_id,
-            'convenio' => $request->paciente_convenio,
-            'unidade_saude_id' => $request->paciente_unidade_saude_id,
-            'tipo_exame' => $request->paciente_tipo_exame,
-            'data_resultado' => $request->paciente_data_resultado,
-            'resultado_exame' => $request->paciente_resultado_exame,
-            'grupo_risco' => $request->paciente_grupo_risco
-        ]);
-        
-        $atendimento = new Atendimento();
-        $atendimento->data_hora_ligacao = $request->atendimento_data_hora_ligacao;
-        $atendimento->isolamento = $request->atendimento_isolamento;
-        $atendimento->orientacao = $request->atendimento_orientacao;
-        $atendimento->apetite = $request->atendimento_apetite;
-        $atendimento->febre = $request->atendimento_febre;
-        $atendimento->tosse = $request->atendimento_tosse;
-        $atendimento->falta_de_ar = $request->atendimento_falta_de_ar;
-        $atendimento->observacoes_gerais = $request->atendimento_observacoes_gerais;
-        $atendimento->paciente_id = $paciente->id;
-        $atendimento->usuario_id = $request->atendimento_usuario_id;
-        $pontos = 0;
-        switch ($request->atendimento_febre) {
-            case 'ausente':
+            $paciente = Paciente::create([
+                'logradouro' => $endereco['logradouro'],
+                'bairro' => $endereco['bairro'],
+                'cidade' => $endereco['cidade'],
+                'estado' => $endereco['uf'],
+                'nome' => $request->paciente_nome,
+                'cep' => $request->paciente_cep,
+                'numero' => $request->paciente_numero,
+                'telefone' => $request->paciente_telefone,
+                'cns' => $request->paciente_cns,
+                'data_nasc' => $request->paciente_data_nasc,
+                'obito' => $request->paciente_obito,
+                'primeira_avaliacao_medica' => $request->paciente_primeira_avaliacao_medica,
+                'isolamento_ate' => $request->paciente_isolamento_ate,
+                'data_inicio_sintomas' => $request->paciente_data_inicio_sintomas,
+                'data_coleta_exames' => $request->paciente_data_coleta_exames,
+                'unidade_sintomatica_id' => $request->paciente_unidade_sintomatica_id,
+                'convenio' => $request->paciente_convenio,
+                'unidade_saude_id' => $request->paciente_unidade_saude_id,
+                'tipo_exame' => $request->paciente_tipo_exame,
+                'data_resultado' => $request->paciente_data_resultado,
+                'resultado_exame' => $request->paciente_resultado_exame,
+                'grupo_risco' => $request->paciente_grupo_risco
+            ]);
+            
+            $atendimento = new Atendimento();
+            $atendimento->data_hora_ligacao = $request->atendimento_data_hora_ligacao;
+            $atendimento->isolamento = $request->atendimento_isolamento;
+            $atendimento->orientacao = $request->atendimento_orientacao;
+            $atendimento->apetite = $request->atendimento_apetite;
+            $atendimento->febre = $request->atendimento_febre;
+            $atendimento->tosse = $request->atendimento_tosse;
+            $atendimento->falta_de_ar = $request->atendimento_falta_de_ar;
+            $atendimento->observacoes_gerais = $request->atendimento_observacoes_gerais;
+            $atendimento->paciente_id = $paciente->id;
+            $atendimento->usuario_id = $request->atendimento_usuario_id;
+            $pontos = 0;
+            switch ($request->atendimento_febre) {
+                case 'ausente':
+                    $pontos+=1;
+                    break;
+                case 'pico_baixo' :
+                    $pontos+=2;
+                    break;
+                case 'persistente':
+                    $pontos+=3;
+                    break;
+            }
+            switch ($request->atendimento_tosse) {
+                case 'ausente':
+                    $pontos+=1;
+                    break;
+                case 'fala_sem_tossir':
+                    $pontos+=2;
+                    break;
+                case'fala_tossindo':
+                    $pontos+=3;
+                    break;
+            }
+            switch ($request->atendimento_falta_de_ar) {
+                case 'ausente':
+                    $pontos+=1;
+                    break;
+                case 'presente_ao_esforco':
+                    $pontos+=2;
+                    break;  
+                case 'intensa_no_repouso':
+                    $pontos+=3;
+                    break;
+            }
+            
+            $idade = Carbon::parse($paciente['data_nasc'])->age;
+            if($idade<30){
                 $pontos+=1;
-                break;
-            case 'pico_baixo' :
+            }
+            if($idade>=30 && $idade<60){
                 $pontos+=2;
-                break;
-            case 'persistente':
+            }
+            if($pontos>=60){
                 $pontos+=3;
-                break;
-        }
-        switch ($request->atendimento_tosse) {
-            case 'ausente':
-                $pontos+=1;
-                break;
-            case 'fala_sem_tossir':
-                $pontos+=2;
-                break;
-            case'fala_tossindo':
-                $pontos+=3;
-                break;
-        }
-        switch ($request->atendimento_falta_de_ar) {
-            case 'ausente':
-                $pontos+=1;
-                break;
-            case 'presente_ao_esforco':
-                $pontos+=2;
-                break;  
-            case 'intensa_no_repouso':
-                $pontos+=3;
-                break;
-        }
-        
-        $idade = Carbon::parse($paciente['data_nasc'])->age;
-        if($idade<30){
-            $pontos+=1;
-        }
-        if($idade>=30 && $idade<60){
-            $pontos+=2;
-        }
-        if($pontos>=60){
-            $pontos+=3;
-        }
-               
-        if($pontos<=6){
-            $atendimento->orientacao_conduta = 'manter_isolamento_domiciliar'; 
-        }
-        if($pontos>=7 && $pontos<=9){
-            $atendimento->orientacao_conduta = 'encaminhar_unidade_sintomatica'; 
-        }
-        if($pontos>=10){
-            $atendimento->orientacao_conduta = 'encaminhar_SAMU';
-        }
-        
-        $atendimento->save();
-        
-        $familiares = $request->familiares;
-        $familiars = [];
-        if(isset($familiares)){
-            foreach($familiares as $familia){
-                $familiars[]=Familiar::create([
-                    'nome' => $familia['nome'],
-                    'sintomatico' => $familia['sintomatico'],
-                    'exame' => $familia['exame'],
-                    'paciente_id' => $paciente->id,
+            }
+                
+            if($pontos<=6){
+                $atendimento->orientacao_conduta = 'manter_isolamento_domiciliar'; 
+            }
+            if($pontos>=7 && $pontos<=9){
+                $atendimento->orientacao_conduta = 'encaminhar_unidade_sintomatica'; 
+            }
+            if($pontos>=10){
+                $atendimento->orientacao_conduta = 'encaminhar_SAMU';
+            }
+            
+            $atendimento->save();
+            
+            $familiares = $request->familiares;
+            $familiars = [];
+            if(isset($familiares)){
+                foreach($familiares as $familia){
+                    $familiars[]=Familiar::create([
+                        'nome' => $familia['nome'],
+                        'sintomatico' => $familia['sintomatico'],
+                        'exame' => $familia['exame'],
+                        'paciente_id' => $paciente->id,
+                        ]);
+                }
+            }
+
+            $comorbidades = $request->comorbidades;
+            $paciente_comorbidades = [];
+            if(isset($comorbidades)){
+                foreach($comorbidades as $comorbidade){
+                    $paciente_comorbidades[] = PacienteComorbidades::create([
+                        'paciente_id' => $paciente->id,
+                        'comorbidades_id' => $comorbidade
                     ]);
+                }
             }
-        }
+            
+            $sinais = $request->sinais;
+            $atendimento_sinais = [];
+            if(isset($sinais)){
+                foreach($sinais as $sinal){
+                    $atendimento_sinais[] = AtendimentoSinais::create([
+                        'atendimento_id' => $atendimento->id,
+                        'sinais_id' => $sinal
+                    ]);
+                }
+            }
 
-        $comorbidades = $request->comorbidades;
-        $paciente_comorbidades = [];
-        if(isset($comorbidades)){
-            foreach($comorbidades as $comorbidade){
-                $paciente_comorbidades[] = PacienteComorbidades::create([
-                    'paciente_id' => $paciente->id,
-                    'comorbidades_id' => $comorbidade
-                ]);
-            }
-        }
-        
-        $sinais = $request->sinais;
-        $atendimento_sinais = [];
-        if(isset($sinais)){
-            foreach($sinais as $sinal){
-                $atendimento_sinais[] = AtendimentoSinais::create([
-                    'atendimento_id' => $atendimento->id,
-                    'sinais_id' => $sinal
-                ]);
-            }
-        }
-
-        return response()->json([$paciente,$atendimento, $familiars, $paciente_comorbidades, $atendimento_sinais], 201);
+            return response()->json([$paciente,$atendimento, $familiars, $paciente_comorbidades, $atendimento_sinais], 201);
+        });
+        return response()->json($createAtendimento, 201);
     }
 
     public function cep(Request $request)
@@ -279,14 +282,14 @@ class PacienteController extends Controller
         return response()->json($endereco, 200);
     }
 
-    public function export_excel() 
+    public function export_excel($id) 
     {
-        return $this->excel->download(new PacientesExport, 'Pacientes.xlsx');
+        return $this->excel->download(new PacientesExport($id), 'Pacientes.xlsx');
     }
 
-    public function export_pdf() 
+    public function export_pdf($id) 
     {
-        return $this->excel->download(new PacientesExport, 'Pacientes.pdf', Excel::DOMPDF);
+        return $this->excel->download(new PacientesExport($id), 'Pacientes.pdf', Excel::DOMPDF);
     }
     public function obitos(){
         $obitos = DB::table('pacientes')
