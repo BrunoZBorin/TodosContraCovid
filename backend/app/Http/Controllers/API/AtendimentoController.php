@@ -56,10 +56,32 @@ class AtendimentoController extends Controller
         if($user->perfil=='monitoramento')
         {
             $atendimentos = Atendimento::whereIn('usuario_id', $usuarios_id)->get();
+
+            foreach($atendimentos as $atendimento)
+            {
+                $pacienteAtendimento = DB::table('pacientes')
+                ->where('pacientes.id',$atendimento->paciente_id)
+                ->select('pacientes.*')
+                ->first();
+
+                $atendimento->nome_paciente = $pacienteAtendimento->nome;
+                $atendimento->telefone_paciente = $pacienteAtendimento->telefone;
+            }
         }
         if($user->perfil=='municipal')
         {
             $atendimentos = Atendimento::all();
+
+            foreach($atendimentos as $atendimento)
+            {
+                $pacienteAtendimento = DB::table('pacientes')
+                ->where('pacientes.id',$atendimento->paciente_id)
+                ->select('pacientes.*')
+                ->first();
+
+                $atendimento->nome_paciente = $pacienteAtendimento->nome;
+                $atendimento->telefone_paciente = $pacienteAtendimento->telefone;
+            }
         }
         return response()->json($atendimentos, 200);
     }

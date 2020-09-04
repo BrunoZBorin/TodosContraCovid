@@ -74,10 +74,6 @@
 
         for(var atendimento of response.data)
         {
-          const responsePaciente = await this.axios.get('pacientes/' + atendimento.paciente_id);
-          atendimento.nome_paciente = responsePaciente.data.nome;
-          atendimento.telefone_paciente = responsePaciente.data.telefone;
-          
           atendimento.data_hora_ligacao = this.moment(atendimento.data_hora_ligacao).format("DD/MM/YYYY hh:mm:ss");
 
           if(atendimento.orientacao_conduta == 'manter_isolamento_domiciliar')
