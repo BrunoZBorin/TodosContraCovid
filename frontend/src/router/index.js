@@ -94,6 +94,20 @@ const routes = [
         }
       },
 
+      // Relatório de Atendimento
+      {
+        path: "/relatorio/atendimento",
+        name: "relatorio_atendimento",
+        component: () => import("../views/Relatorio/Atendimento")
+      },
+
+      // Relatório de Paciente
+      {
+        path: "/relatorio/paciente",
+        name: "relatorio_paciente",
+        component: () => import("../views/Relatorio/Paciente")
+      },
+
     ]
   }
 ];
