@@ -42,8 +42,9 @@ Route::get('/pacientes_idades', 'API\PacienteController@idades');
 Route::get('/pacientes_com_comorbidades', 'API\PacienteController@pacientes_com_comorbidades');
 Route::get('/casos_finalizados', 'API\PacienteController@casos_finalizados');
 Route::get('/casos_positivos', 'API\PacienteController@casos_positivos');
-
+//Listagem diaria
 Route::get('/listagem_diaria', 'API\AtendimentoController@listagem_diaria');
+
 Route::get('/show_sinais_familiares/{id}', 'API\PacienteController@show_sinais_familiares');
 Route::get('/show_atendimento_sinais/{id}', 'API\AtendimentoController@show_atendimento_sinais');
 Route::post('/atendimento_create_paciente_update', 'API\AtendimentoController@store_atendimento_update_paciente');

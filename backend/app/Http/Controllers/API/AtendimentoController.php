@@ -230,18 +230,43 @@ class AtendimentoController extends Controller
                 ->where('atendimento_sinais.atendimento_id',$id)
                 ->get();
             
-                
-            $sinais = $request->sinais;
-            foreach($atendimento_sinais[0] as $key=> $a_s)
-            {
-                if(isset($sinais[$key]))
-                {
-                    $as = AtendimentoSinais::findOrFail($a_s->id);
-                    $as->sinais_id = $sinais[$key];
-                    $as->save();
-                    $atendimento_sinais[$key]=$as;
+            if(isset($atendimento_sinais)){
+              foreach($atendimento_sinais[0] as $as){
+                    $a_s = PacienteComorbidades::findOrFail($as->id);
+                    $a_s->delete();
                 }
             }
+            $sinais = $request->sinais;    
+            if(isset($sinais)){
+                    foreach($sinais as $s){
+                    $a_s = AtendimentoSinais::create([
+                        'atendimento_id'=>$atendimento->id,
+                        'sinais_id'=>$s
+                    ]);
+                    $atendimentos_sinais[]= $a_s;
+                }
+            }
+        
+            /**$paciente_comorbidades[] = DB::table('paciente_comorbidades')
+            ->where('paciente_comorbidades.paciente_id',$paciente->id)
+            ->get();
+                if(isset($paciente_comorbidades)){
+                foreach($paciente_comorbidades[0] as $pc){
+                    $p_c = PacienteComorbidades::findOrFail($pc->id);
+                    $p_c->delete();
+                }
+            }
+            $paciente_comorbidades=[];
+            $comorbidades = $request->comorbidades;
+                if(isset($comorbidades)){
+                foreach($comorbidades as $key=> $c){
+                    $p_c = PacienteComorbidades::create([
+                        'paciente_id' => $paciente->id,
+                        'comorbidades_id' => $c
+                    ]);
+                    $paciente_comorbidades[] = $p_c;
+                }
+            } */
         
             
             $p = DB::table('pacientes')
@@ -548,18 +573,6 @@ class AtendimentoController extends Controller
                         ->where('pacientes.data_nasc','<', $idoso)
                         ->select('pacientes.*');
         
-        $nao_idosos = DB::table('pacientes')
-                        ->where('pacientes.data_nasc','>', $idoso)
-                        ->select('pacientes.*');
-                                 
-        $grupo_risco = DB::table('pacientes')
-                        ->join('paciente_comorbidades', 'pacientes.id', '=', 'paciente_comorbidades.paciente_id')
-                        ->whereNotNull('paciente_comorbidades.comorbidades_id')
-                        ->where('pacientes.isolamento_ate','>',$hoje)
-                        ->union($idosos)
-                        ->select('pacientes.*')
-                        ->get();
-
         $grupo_nao_risco = DB::table('pacientes')
                         ->leftJoin('paciente_comorbidades', 'pacientes.id', '=', 'paciente_comorbidades.paciente_id')
                         ->whereNull('paciente_comorbidades.comorbidades_id')
@@ -567,29 +580,54 @@ class AtendimentoController extends Controller
                         ->where('pacientes.data_nasc','>', $idoso)
                         ->select('pacientes.*')
                         ->get();
-                        
-        /*$atendidos = DB::table('pacientes')
+        
+        $grupo_risco = DB::table('pacientes')
                         ->join('paciente_comorbidades', 'pacientes.id', '=', 'paciente_comorbidades.paciente_id')
-                        ->whereNotNull('paciente_comorbidades.comorbidades_id')
-                        ->leftJoin('atendimentos','pacientes.id','=','atendimentos.paciente_id')
-                        ->whereDate('atendimentos.data_hora_ligacao','!=', $hoje)
-                        ->where('pacientes.isolamento_ate','>',$hoje)
-                        ->union($idosos)
-                        ->select('pacientes.*')
-                        ->get();*/
-
-        $atendidos = DB::table('pacientes')
-                        ->join('paciente_comorbidades', 'pacientes.id', '=', 'paciente_comorbidades.paciente_id')
-                        ->join('atendimentos','pacientes.id','=','atendimentos.paciente_id')
-                        ->select(DB::raw('atendimentos.data_hora_ligacao as ligacao'))
-                        ->whereDate('ligacao','<>', $hoje)
                         ->whereNotNull('paciente_comorbidades.comorbidades_id')
                         ->where('pacientes.isolamento_ate','>',$hoje)
                         ->union($idosos)
                         ->select('pacientes.*')
                         ->get();
         
-        return response()->json([$atendidos, $grupo_risco, $grupo_nao_risco], 200);
+        $atendidos = DB::table('atendimentos')
+                        ->whereDate('atendimentos.data_hora_ligacao', $hoje)
+                        ->select('atendimentos.*')
+                        ->get();
+
+        $id_atendimentos = [];
+        
+        for($i=0; $i<count($atendidos); $i++){
+            $id_atendimentos[]=$atendidos[$i]->paciente_id;
+        }
+
+        $risco=[];
+        foreach($grupo_risco as $gr){
+            if (in_array($gr->id, $id_atendimentos)) { 
+                
+            }else{
+                $risco[]=$gr;
+            }
+        }
+        
+        $nao_risco=[];
+        foreach($grupo_nao_risco as $gnp){
+            if (in_array($gnp->id, $id_atendimentos)) { 
+                
+            }else{
+                $nao_risco[]=$gnp;
+            }
+        }
+        $g_nao_risco = [];
+        foreach($nao_risco as $nr){
+            $date = new Carbon($nr->isolamento_ate);
+            $array_datas=[$data1 = $date->subDays(2), $data2 = $date->subDays(4), $data3 = $date->subDays(6), $data4 = $date->subDays(8), $data5 = $date->subDays(10), $data6 = $date->subDays(12)]; 
+            if(in_array($hoje, $array_datas)){
+                $g_nao_risco[]=$nr;
+            }
+            
+        }
+        
+        return response()->json([$risco, $nao_risco], 200);
         
     }
     
