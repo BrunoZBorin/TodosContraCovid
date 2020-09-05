@@ -19,7 +19,7 @@ export default new Vuex.Store({
           
           state.dadosUser = { id, nome, perfil, unidade_saude_id, admin, unidade_nome };
 
-          Vue.axios.defaults.headers.common['Authorization'] = access_token;
+          Vue.axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
           state.token = access_token;
 
           resolve(true);
