@@ -40,8 +40,8 @@
                   :loading="loadingEndereco"
                   disabled
                   required
-                  @input="$v.cns.$touch()"
-                  @blur="$v.cns.$touch()"
+                  @input="$v.cidade.$touch()"
+                  @blur="$v.cidade.$touch()"
                   dense
                 ></v-text-field>
               </v-col>
@@ -53,8 +53,8 @@
                   :loading="loadingEndereco"
                   disabled
                   required
-                  @input="$v.cns.$touch()"
-                  @blur="$v.cns.$touch()"
+                  @input="$v.uf.$touch()"
+                  @blur="$v.uf.$touch()"
                   dense
                 ></v-text-field>
               </v-col>
@@ -66,8 +66,8 @@
                   :loading="loadingEndereco"
                   disabled
                   required
-                  @input="$v.cns.$touch()"
-                  @blur="$v.cns.$touch()"
+                  @input="$v.bairro.$touch()"
+                  @blur="$v.bairro.$touch()"
                   dense
                 ></v-text-field>
               </v-col>
@@ -81,8 +81,8 @@
                   :loading="loadingEndereco"
                   disabled
                   required
-                  @input="$v.cns.$touch()"
-                  @blur="$v.cns.$touch()"
+                  @input="$v.logradouro.$touch()"
+                  @blur="$v.logradouro.$touch()"
                   dense
                 ></v-text-field>
               </v-col>
@@ -143,7 +143,6 @@
     validations: {
       nome: { required },
       cep: { required, minLength: minLength(9), maxLength: maxLength(9)  },
-      cns: { required },
       cidade: { required },
       uf: { required },
       bairro: { required },
