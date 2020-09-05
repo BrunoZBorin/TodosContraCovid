@@ -1,5 +1,6 @@
 <template>
-  <div v-if="this.$store.getters.getDadosUser.perfil == 'monitoramento'">
+  <div v-if="this.$store.getters.getDadosUser.perfil == 'monitoramento' ||
+             this.$store.getters.getDadosUser.admin > 0">
     <v-card>
       <v-card-title class="headline">
         Listagem de Ligações Diárias
