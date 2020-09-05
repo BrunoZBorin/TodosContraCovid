@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\PacienteFormRequest;
 use Carbon\Carbon;
 use App\Exports\PacientesExport;
+use App\Exports\PacientesExportPDF;
 use Maatwebsite\Excel\Excel;
 
 
@@ -289,7 +290,7 @@ class PacienteController extends Controller
 
     public function export_pdf($id) 
     {
-        return $this->excel->download(new PacientesExport($id), 'Pacientes.pdf', Excel::DOMPDF);
+        return $this->excel->download(new PacientesExportPDF($id), 'Pacientes.pdf', Excel::DOMPDF);
     }
     public function obitos(){
         $obitos = DB::table('pacientes')
