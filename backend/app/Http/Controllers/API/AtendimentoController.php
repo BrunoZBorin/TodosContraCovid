@@ -13,6 +13,7 @@ use App\Http\Requests\AtendimentoFormRequest;
 use App\Paciente;
 use Carbon\Carbon;
 use App\Exports\AtendimentosExport;
+use App\Exports\AtendimentosExportPDF;
 use App\Familiar;
 use Maatwebsite\Excel\Excel;
 use Illuminate\Support\Facades\DB;
@@ -404,7 +405,7 @@ class AtendimentoController extends Controller
     }
     public function export_pdf($id) 
     {
-        return $this->excel->download(new AtendimentosExport($id), 'atendimentos.pdf', Excel::DOMPDF);
+        return $this->excel->download(new AtendimentosExportPDF($id), 'atendimentos.pdf', Excel::DOMPDF);
     }
 
     public function store_atendimento_update_paciente(Request $request){
